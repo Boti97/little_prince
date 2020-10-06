@@ -5,17 +5,25 @@ using UnityEngine;
 public class ThirdPersonController : MonoBehaviour
 {
     [SerializeField]
-    private float moveSpeed = 15;
+    private float moveSpeed = 8f;
     [SerializeField]
-    private float jumpForce = 220;
+    private float jumpForce = 300;
+    [SerializeField]
+    private float mouseSensitivity = 250f;
     [SerializeField]
     private LayerMask groundedMask;
+    [SerializeField]
+    private Transform camera;
 
+    private Vector3 moveAmount;
     private Vector3 moveDir;
     private Rigidbody rigidbody;
     private bool grounded;
     private bool isJumpEnabled;
     private int numberOfJumps = 0;
+    private float turnSmoothTime = 0.1f;
+    private float turnSmoothVelocity;
+    private Vector3 smoothMoveVelocity;
 
     private void Start()
     {
@@ -27,6 +35,8 @@ public class ThirdPersonController : MonoBehaviour
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
         moveDir = new Vector3(horizontal, 0, vertical).normalized;
+        Vector3 targetAmount = moveDir * moveSpeed;
+        moveAmount = Vector3.SmoothDamp(moveAmount, targetAmount, ref smoothMoveVelocity, .15f);
 
         if (Input.GetButtonDown("Jump") && (grounded || isJumpEnabled))
         {
@@ -41,9 +51,7 @@ public class ThirdPersonController : MonoBehaviour
 
         grounded = false;
         Ray ray = new Ray(transform.position, -transform.up);
-        RaycastHit raycastHit;
-
-        if(Physics.Raycast(ray, out raycastHit, 2 + .1f , groundedMask))
+        if (Physics.Raycast(ray, out _, 2 + .1f , groundedMask))
         {
             grounded = true;
             isJumpEnabled = true;
@@ -52,6 +60,19 @@ public class ThirdPersonController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        rigidbody.MovePosition(rigidbody.position + transform.TransformDirection(moveDir) * moveSpeed * Time.deltaTime);
+        if (moveDir.magnitude >= 0.1f)
+        {
+            ////megvan, hogy milyen irányba kell elfordulnunk
+            //float targetAngle = Mathf.Atan2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")) * Mathf.Rad2Deg;
+            ////puhább mozgást ad
+            //float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
+            ////elfordulunk abba az irányba
+            //transform.rotation = Quaternion.Euler(0f, angle, 0f);
+
+            //Vector3 moveDir2 = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
+            //controller.Move(moveDir2.normalized * moveSpeed * Time.deltaTime);
+
+            rigidbody.MovePosition(rigidbody.position + transform.TransformDirection(moveAmount) * Time.deltaTime);
+        }
     }
 }

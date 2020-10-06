@@ -19,6 +19,16 @@ public class GravityBody : MonoBehaviour
     //all rigidbody calculation should be here
     void FixedUpdate()
     {
-        gravityAttractor.Attract(transform.gameObject);
+        if(gravityAttractor != null)
+        {
+            gravityAttractor.Attract(transform.gameObject);
+        }
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        gravityAttractor = other.gameObject.GetComponent<GravityAttractor>();
+
+    }
+
 }
