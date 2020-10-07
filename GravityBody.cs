@@ -5,19 +5,26 @@ using UnityEngine;
 [RequireComponent(typeof (Rigidbody))]
 public class GravityBody : MonoBehaviour
 {
-    GravityAttractor gravityAttractor;
-    Rigidbody rigidbody;
 
-    void Awake()
+    [SerializeField]
+    private GameObject initialAttractor;
+
+    private GravityAttractor gravityAttractor;
+    private Rigidbody rigidbody;
+
+    private void Awake()
     {
-        gravityAttractor = GameObject.FindGameObjectWithTag("Planet").GetComponent<GravityAttractor>();
+        //it is not mandatory to add an initial attractor
+        if(initialAttractor != null)
+        {
+            gravityAttractor = initialAttractor.GetComponent<GravityAttractor>();
+        }
         rigidbody = transform.GetComponent<Rigidbody>();
         rigidbody.useGravity = false;
         rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
     }
 
-    //all rigidbody calculation should be here
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         if(gravityAttractor != null)
         {
@@ -28,7 +35,6 @@ public class GravityBody : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         gravityAttractor = other.gameObject.GetComponent<GravityAttractor>();
-
     }
 
 }
