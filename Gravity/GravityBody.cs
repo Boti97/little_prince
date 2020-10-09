@@ -8,6 +8,8 @@ public class GravityBody : MonoBehaviour
 
     [SerializeField]
     private GameObject initialAttractor;
+    [SerializeField]
+    private float attractorPowerIndicator = 1;
 
     private GravityAttractor gravityAttractor;
     private Rigidbody rigidbody;
@@ -34,7 +36,9 @@ public class GravityBody : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        gravityAttractor = other.gameObject.GetComponent<GravityAttractor>();
+        if(other.gameObject.layer == LayerMask.NameToLayer("GravityField"))
+        {
+            gravityAttractor = other.gameObject.GetComponentInParent<GravityAttractor>();
+        }
     }
-
 }

@@ -60,7 +60,8 @@ public class ThirdPersonController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (moveDir.magnitude >= 0.1f)
+        Ray ray = new Ray(transform.position, -transform.up);
+        if (moveDir.magnitude >= 0.1f && Physics.Raycast(ray, out _, 2 + .1f, groundedMask))
         {
             ////megvan, hogy milyen irányba kell elfordulnunk
             //float targetAngle = Mathf.Atan2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")) * Mathf.Rad2Deg;
