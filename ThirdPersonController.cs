@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class ThirdPersonController : MonoBehaviour
 {
@@ -21,8 +19,6 @@ public class ThirdPersonController : MonoBehaviour
     private bool grounded;
     private bool isJumpEnabled;
     private int numberOfJumps = 0;
-    private float turnSmoothTime = 0.1f;
-    private float turnSmoothVelocity;
     private Vector3 smoothMoveVelocity;
 
     private void Start()
@@ -62,16 +58,6 @@ public class ThirdPersonController : MonoBehaviour
     {
         if (moveDir.magnitude >= 0.1f)
         {
-            ////megvan, hogy milyen irányba kell elfordulnunk
-            //float targetAngle = Mathf.Atan2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")) * Mathf.Rad2Deg;
-            ////puhább mozgást ad
-            //float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
-            ////elfordulunk abba az irányba
-            //transform.rotation = Quaternion.Euler(0f, angle, 0f);
-
-            //Vector3 moveDir2 = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
-            //controller.Move(moveDir2.normalized * moveSpeed * Time.deltaTime);
-
             rigidbody.MovePosition(rigidbody.position + transform.TransformDirection(moveAmount) * Time.deltaTime);
         }
     }

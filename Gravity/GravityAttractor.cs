@@ -1,9 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
+
 
 public class GravityAttractor : MonoBehaviour
 {
+    [HideInInspector]
+    public Guid guid;
     [SerializeField]
     protected float gravity = -100f;
     [SerializeField]
@@ -15,6 +17,14 @@ public class GravityAttractor : MonoBehaviour
 
     protected float attractTurnSpeed = 0.1f;
 
+    private void Awake()
+    {
+        if(guid != null)
+        {
+            guid = Guid.NewGuid();
+        }
+    }
+
     //base method, this needs to be overridden for special gravity behavior
     public void Attract(GameObject body)
     {
@@ -24,7 +34,6 @@ public class GravityAttractor : MonoBehaviour
 
         body.transform.rotation = Quaternion.Slerp(body.transform.rotation, targetRotation, attractTurnSpeed);
 
-        System.Console.WriteLine("Value: " + GetGravityPowerIndicator(body));
         body.GetComponent<Rigidbody>().AddForce(targetDir * gravity / GetGravityPowerIndicator(body));
     }
 
