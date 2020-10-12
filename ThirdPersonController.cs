@@ -20,9 +20,12 @@ public class ThirdPersonController : MonoBehaviour
     private bool isJumpEnabled;
     private int numberOfJumps = 0;
     private Vector3 smoothMoveVelocity;
+    private Animator playerAnimator;
 
     private void Start()
     {
+        playerAnimator = GetComponentInChildren<Animator>();
+        playerAnimator.SetInteger("isWalking", 0);
         rigidbody = transform.GetComponent<Rigidbody>();
     }
 
@@ -58,7 +61,12 @@ public class ThirdPersonController : MonoBehaviour
     {
         if (moveDir.magnitude >= 0.1f)
         {
+            playerAnimator.SetInteger("isWalking", 1);
             rigidbody.MovePosition(rigidbody.position + transform.TransformDirection(moveAmount) * Time.deltaTime);
+        } 
+        else
+        {
+            playerAnimator.SetInteger("isWalking", 0);
         }
     }
 }
