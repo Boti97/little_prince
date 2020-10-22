@@ -64,10 +64,6 @@ public class GravityBody : MonoBehaviour
         {
             gravityAttractorDictionary.Remove(gravityAttractor.guid);
         }
-        else
-        {
-            gravityAttractorDictionary[gravityAttractor.guid] = new KeyValuePair<GravityAttractor, float>(gravityAttractor, Time.realtimeSinceStartup);
-        }
     }
 
     //checks if one or more attractors are out of our object's scope (it left them a while ago) and removes them
