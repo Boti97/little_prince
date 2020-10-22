@@ -4,12 +4,16 @@ public class ThirdPersonController : MonoBehaviour
 {
     [SerializeField]
     private float moveSpeed = 8f;
+
     [SerializeField]
     private float jumpForce = 300;
+
     [SerializeField]
     private float mouseSensitivity = 250f;
+
     [SerializeField]
     private LayerMask groundedMask;
+
     [SerializeField]
     private Transform camera;
 
@@ -43,14 +47,15 @@ public class ThirdPersonController : MonoBehaviour
             numberOfJumps++;
         }
 
-        if(numberOfJumps > 1) {
+        if (numberOfJumps > 1)
+        {
             isJumpEnabled = false;
             numberOfJumps = 0;
         }
 
         grounded = false;
         Ray ray = new Ray(transform.position, -transform.up);
-        if (Physics.Raycast(ray, out _, 2 + .1f , groundedMask))
+        if (Physics.Raycast(ray, out _, 2 + .1f, groundedMask))
         {
             grounded = true;
             isJumpEnabled = true;
@@ -63,7 +68,7 @@ public class ThirdPersonController : MonoBehaviour
         {
             playerAnimator.SetInteger("isWalking", 1);
             rigidbody.MovePosition(rigidbody.position + transform.TransformDirection(moveAmount) * Time.deltaTime);
-        } 
+        }
         else
         {
             playerAnimator.SetInteger("isWalking", 0);

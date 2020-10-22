@@ -1,25 +1,28 @@
 ﻿using System;
 using UnityEngine;
 
-
 public class GravityAttractor : MonoBehaviour
 {
     [HideInInspector]
     public Guid guid;
+
     [SerializeField]
     protected float gravity = -100f;
+
     [SerializeField]
     private float gravityPowerIndicator = 1;
-    public float GravityPowerIndicator { 
-        get { return gravityPowerIndicator; } 
-        set { gravityPowerIndicator = value; } 
+
+    public float GravityPowerIndicator
+    {
+        get { return gravityPowerIndicator; }
+        set { gravityPowerIndicator = value; }
     }
 
     protected float attractTurnSpeed = 0.1f;
 
     private void Awake()
     {
-        if(guid != null)
+        if (guid != null)
         {
             guid = Guid.NewGuid();
         }
@@ -29,8 +32,7 @@ public class GravityAttractor : MonoBehaviour
     public void Attract(GameObject body)
     {
         Vector3 targetDir = (body.transform.position - transform.position).normalized;
-        Vector3 bodyUp = body.transform.up;
-        Quaternion targetRotation = Quaternion.FromToRotation(bodyUp, targetDir) * body.transform.rotation;
+        Quaternion targetRotation = Quaternion.FromToRotation(body.transform.up, targetDir) * body.transform.rotation;
 
         body.transform.rotation = Quaternion.Slerp(body.transform.rotation, targetRotation, attractTurnSpeed);
 

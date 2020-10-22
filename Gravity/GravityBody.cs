@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -7,9 +6,9 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class GravityBody : MonoBehaviour
 {
-
     [SerializeField]
     private GameObject initialAttractor;
+
     [SerializeField]
     private float attractorPowerIndicator = 1;
 
@@ -41,7 +40,7 @@ public class GravityBody : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.layer == LayerMask.NameToLayer("GravityField"))
+        if (other.gameObject.layer.Equals(LayerMask.NameToLayer("GravityField")))
         {
             GravityAttractor gravityAttractor = other.gameObject.GetComponentInParent<GravityAttractor>();
             if (gravityAttractorDictionary.ContainsKey(gravityAttractor.guid))
@@ -60,8 +59,15 @@ public class GravityBody : MonoBehaviour
     private void OnTriggerExit(Collider other)
     {
         GravityAttractor gravityAttractor = other.gameObject.GetComponentInParent<GravityAttractor>();
-        //gravityAttractorDictionary.Remove(gravityAttractor.guid);
-        gravityAttractorDictionary[gravityAttractor.guid] = new KeyValuePair<GravityAttractor, float>(gravityAttractor, Time.realtimeSinceStartup);
+
+        if (other.gameObject.layer.Equals(LayerMask.NameToLayer("GravityField")))
+        {
+            gravityAttractorDictionary.Remove(gravityAttractor.guid);
+        }
+        else
+        {
+            gravityAttractorDictionary[gravityAttractor.guid] = new KeyValuePair<GravityAttractor, float>(gravityAttractor, Time.realtimeSinceStartup);
+        }
     }
 
     //checks if one or more attractors are out of our object's scope (it left them a while ago) and removes them
