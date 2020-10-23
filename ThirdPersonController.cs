@@ -25,6 +25,8 @@ public class ThirdPersonController : MonoBehaviour
     private int numberOfJumps = 0;
     private Vector3 smoothMoveVelocity;
     private Animator playerAnimator;
+    private float turnSmoothTime = 0.1f;
+    private float turnSmoothVelocity;
 
     private void Start()
     {
@@ -37,7 +39,7 @@ public class ThirdPersonController : MonoBehaviour
     {
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
-        moveDir = new Vector3(horizontal, 0, vertical).normalized;
+        moveDir = new Vector3(horizontal, 0f, vertical).normalized;
         Vector3 targetAmount = moveDir * moveSpeed;
         moveAmount = Vector3.SmoothDamp(moveAmount, targetAmount, ref smoothMoveVelocity, .15f);
 
@@ -67,6 +69,21 @@ public class ThirdPersonController : MonoBehaviour
         if (moveDir.magnitude >= 0.1f)
         {
             playerAnimator.SetInteger("isWalking", 1);
+            Debug.DrawRay(transform.position, transform.Find("Player Model").TransformDirection(moveDir) * 10, Color.black);
+
+            Vector3 moveDirWP = transform.TransformDirection(moveDir);
+
+            //rotate the model the way we're going
+            float targetAngle = Mathf.Atan2(moveDirWP.x, moveDirWP.z) * Mathf.Rad2Deg;
+            float angle = Mathf.SmoothDampAngle(transform.Find("Player Model").eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
+
+            //transform.Find("Player Model").rotation = Quaternion.FromToRotation(transform.Find("Player Model").position, moveDirWP);
+
+            //transform.Find("Player Model").rotation = Quaternion.Euler(transform.Find("Player Model").eulerAngles.x, angle, transform.Find("Player Model").eulerAngles.z);
+
+            Debug.DrawRay(transform.Find("Player Model").position, transform.Find("Player Model").forward * 10, Color.green);
+
+            //move the body to that position
             rigidbody.MovePosition(rigidbody.position + transform.TransformDirection(moveAmount) * Time.deltaTime);
         }
         else
