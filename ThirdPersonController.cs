@@ -27,12 +27,14 @@ public class ThirdPersonController : MonoBehaviour
     private Animator playerAnimator;
     private float turnSmoothTime = 0.1f;
     private float turnSmoothVelocity;
+    private Transform playerModel;
 
     private void Start()
     {
         playerAnimator = GetComponentInChildren<Animator>();
         playerAnimator.SetInteger("isWalking", 0);
         rigidbody = transform.GetComponent<Rigidbody>();
+        playerModel = transform.Find("Player Model");
     }
 
     private void Update()
@@ -71,11 +73,11 @@ public class ThirdPersonController : MonoBehaviour
             playerAnimator.SetInteger("isWalking", 1);
 
             //move direction should be in local space, because we are moving along the z axis as well
-            Vector3 moveDirWP = transform.Find("Player Model").TransformDirection(moveDir);
+            Vector3 moveDirWP = playerModel.TransformDirection(moveDir);
 
             //rotate the model the way we're going
             float targetAngle = Mathf.Atan2(moveDirWP.x, moveDirWP.z) * Mathf.Rad2Deg;
-            float angle = Mathf.SmoothDampAngle(transform.Find("Player Model").eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
+            float angle = Mathf.SmoothDampAngle(playerModel.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
 
             //TRYOUTS:
             //transform.Find("Player Model").rotation = Quaternion.FromToRotation(transform.Find("Player Model").position, moveDirWP);
@@ -84,8 +86,10 @@ public class ThirdPersonController : MonoBehaviour
             //DEBUD RAYS:
             //player moving direction
             Debug.DrawRay(transform.position, moveDirWP * 10, Color.black);
+            Debug.Log("move direction: " + moveDirWP);
             //player facing directin (should be same as moving direction)
-            Debug.DrawRay(transform.Find("Player Model").position, transform.Find("Player Model").forward * 10, Color.green);
+            Debug.DrawRay(playerModel.position, playerModel.forward * 10, Color.green);
+            Debug.Log("face direction: " + playerModel.forward);
 
             //move the body to that position
             rigidbody.MovePosition(rigidbody.position + transform.TransformDirection(moveAmount) * Time.deltaTime);
