@@ -69,18 +69,20 @@ public class ThirdPersonController : MonoBehaviour
         if (moveDir.magnitude >= 0.1f)
         {
             playerAnimator.SetInteger("isWalking", 1);
-            Debug.DrawRay(transform.position, transform.Find("Player Model").TransformDirection(moveDir) * 10, Color.black);
 
-            Vector3 moveDirWP = transform.TransformDirection(moveDir);
+            //move direction should be in local space, because we are moving along the z axis as well
+            Vector3 moveDirWP = transform.Find("Player Model").TransformDirection(moveDir);
 
             //rotate the model the way we're going
             float targetAngle = Mathf.Atan2(moveDirWP.x, moveDirWP.z) * Mathf.Rad2Deg;
             float angle = Mathf.SmoothDampAngle(transform.Find("Player Model").eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
 
+            //TRYOUTS:
             //transform.Find("Player Model").rotation = Quaternion.FromToRotation(transform.Find("Player Model").position, moveDirWP);
-
             //transform.Find("Player Model").rotation = Quaternion.Euler(transform.Find("Player Model").eulerAngles.x, angle, transform.Find("Player Model").eulerAngles.z);
 
+            //DEBUD RAYS:
+            Debug.DrawRay(transform.position, moveDirWP * 10, Color.black);
             Debug.DrawRay(transform.Find("Player Model").position, transform.Find("Player Model").forward * 10, Color.green);
 
             //move the body to that position
