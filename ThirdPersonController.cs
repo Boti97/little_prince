@@ -25,7 +25,7 @@ public class ThirdPersonController : MonoBehaviour
     private int numberOfJumps = 0;
     private Vector3 smoothMoveVelocity;
     private Animator playerAnimator;
-    private float turnSmoothTime = 0.1f;
+    private float turnSmoothTime = 8f;
     private float turnSmoothVelocity;
     private Transform playerModel;
 
@@ -84,8 +84,8 @@ public class ThirdPersonController : MonoBehaviour
 
             //TRYOUTS:
             //playerModel.rotation = Quaternion.FromToRotation(playerModel.position, moveDirWP);
-            playerModel.rotation = Quaternion.LookRotation(moveDirWP, transform.up);
-            //playerModel.rotation = Quaternion.Slerp(playerModel.rotation, targetRotation, turnSmoothTime * Time.deltaTime);
+            Quaternion targetRotation = Quaternion.LookRotation(moveDirWP, transform.up);
+            playerModel.rotation = Quaternion.Slerp(playerModel.rotation, targetRotation, turnSmoothTime * Time.deltaTime);
             //playerModel.forward = moveDirWP;
 
             //DEBUD RAYS:
