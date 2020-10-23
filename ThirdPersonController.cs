@@ -82,7 +82,9 @@ public class ThirdPersonController : MonoBehaviour
             //transform.Find("Player Model").rotation = Quaternion.Euler(transform.Find("Player Model").eulerAngles.x, angle, transform.Find("Player Model").eulerAngles.z);
 
             //DEBUD RAYS:
+            //player moving direction
             Debug.DrawRay(transform.position, moveDirWP * 10, Color.black);
+            //player facing directin (should be same as moving direction)
             Debug.DrawRay(transform.Find("Player Model").position, transform.Find("Player Model").forward * 10, Color.green);
 
             //move the body to that position
