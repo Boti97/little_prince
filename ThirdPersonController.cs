@@ -72,33 +72,9 @@ public class ThirdPersonController : MonoBehaviour
         {
             playerAnimator.SetInteger("isWalking", 1);
 
-            //move direction should be in local space, because we are moving along the z axis as well
             Vector3 moveDirWP = transform.TransformDirection(moveDir);
-            //Vector3 moveDirWP = new Vector3(Mathf.Sign(playerModel.forward.x) * moveDirWPTemp.x,
-            //    Mathf.Sign(playerModel.forward.y) * moveDirWPTemp.y,
-            //    Mathf.Sign(playerModel.forward.z) * moveDirWPTemp.z);
-
-            //rotate the model the way we're going
-            //float targetAngle = Mathf.Atan2(moveDirWP.x, moveDirWP.z) * Mathf.Rad2Deg;
-            //float angle = Mathf.SmoothDampAngle(playerModel.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
-
-            //TRYOUTS:
-            //playerModel.rotation = Quaternion.FromToRotation(playerModel.position, moveDirWP);
             Quaternion targetRotation = Quaternion.LookRotation(moveDirWP, transform.up);
             playerModel.rotation = Quaternion.Slerp(playerModel.rotation, targetRotation, turnSmoothTime * Time.deltaTime);
-            //playerModel.forward = moveDirWP;
-
-            //DEBUD RAYS:
-            //player moving direction
-            Debug.DrawRay(transform.position, moveDirWP * 10, Color.black);
-            Debug.Log("move direction: " + moveDirWP);
-            //player model facing directin (should be same as moving direction)
-            Debug.DrawRay(playerModel.position, playerModel.forward * 10, Color.green);
-            Debug.Log("model face direction: " + playerModel.forward);
-            //player facing directin (should be same as moving direction)
-            Debug.DrawRay(transform.position, transform.forward * 10, Color.red);
-            Debug.Log("face direction: " + transform.forward);
-            //Debug.Log("angle: " + targetAngle);
 
             //move the body to that position
             rigidbody.MovePosition(rigidbody.position + transform.TransformDirection(moveAmount) * Time.deltaTime);
