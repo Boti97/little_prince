@@ -3,31 +3,32 @@
 public class ThirdPersonController : MonoBehaviour
 {
     [SerializeField]
-    private float moveSpeed = 8f;
-
-    [SerializeField]
-    private float jumpForce = 300;
-
-    [SerializeField]
-    private float mouseSensitivity = 250f;
-
-    [SerializeField]
     private LayerMask groundedMask;
 
     [SerializeField]
     private Transform camera;
 
-    private Vector3 moveAmount;
-    private Vector3 moveDir;
+    //basic objects
     private Rigidbody rigidbody;
+
+    private Animator playerAnimator;
+    private Transform playerModel;
+
+    //vectors for movement
+    private Vector3 moveAmount;
+
+    private Vector3 moveDir;
+    private Vector3 cameraRelMoveDir;
+
+    private float turnSmoothTime = 8f;
+    private float moveSpeed = 8f;
+
+    //variables for jump
     private bool grounded;
+
+    private float jumpForce = 2000f;
     private bool isJumpEnabled;
     private int numberOfJumps = 0;
-    private Vector3 smoothMoveVelocity;
-    private Animator playerAnimator;
-    private float turnSmoothTime = 8f;
-    private float turnSmoothVelocity;
-    private Transform playerModel;
 
     private void Start()
     {
@@ -42,8 +43,12 @@ public class ThirdPersonController : MonoBehaviour
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
         moveDir = new Vector3(horizontal, 0f, vertical).normalized;
-        Vector3 targetAmount = moveDir * moveSpeed;
-        moveAmount = Vector3.SmoothDamp(moveAmount, targetAmount, ref smoothMoveVelocity, .15f);
+
+        Vector3 cameraRelFaceDir = Vector3.ProjectOnPlane(camera.forward, transform.up).normalized;
+        float anglePlayerForwCameraForw = Vector3.SignedAngle(cameraRelFaceDir, transform.forward, Vector3.forward);
+        cameraRelMoveDir = (Quaternion.AngleAxis(-anglePlayerForwCameraForw, transform.up) * transform.TransformDirection(moveDir)).normalized;
+
+        moveAmount = cameraRelMoveDir * moveSpeed;
 
         if (Input.GetButtonDown("Jump") && (grounded || isJumpEnabled))
         {
@@ -72,12 +77,11 @@ public class ThirdPersonController : MonoBehaviour
         {
             playerAnimator.SetInteger("isWalking", 1);
 
-            Vector3 moveDirWP = transform.TransformDirection(moveDir);
-            Quaternion targetRotation = Quaternion.LookRotation(moveDirWP, transform.up);
+            Quaternion targetRotation = Quaternion.LookRotation(cameraRelMoveDir, transform.up);
             playerModel.rotation = Quaternion.Slerp(playerModel.rotation, targetRotation, turnSmoothTime * Time.deltaTime);
 
             //move the body to that position
-            rigidbody.MovePosition(rigidbody.position + transform.TransformDirection(moveAmount) * Time.deltaTime);
+            rigidbody.MovePosition(rigidbody.position + moveAmount * Time.deltaTime);
         }
         else
         {
