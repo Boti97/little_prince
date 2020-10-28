@@ -45,7 +45,7 @@ public class ThirdPersonController : MonoBehaviour
         moveDir = new Vector3(horizontal, 0f, vertical).normalized;
 
         Vector3 cameraRelFaceDir = Vector3.ProjectOnPlane(camera.forward, transform.up).normalized;
-        float anglePlayerForwCameraForw = Vector3.SignedAngle(cameraRelFaceDir, transform.forward, Vector3.forward);
+        float anglePlayerForwCameraForw = Vector3.SignedAngle(cameraRelFaceDir, transform.forward, transform.up);
         cameraRelMoveDir = (Quaternion.AngleAxis(-anglePlayerForwCameraForw, transform.up) * transform.TransformDirection(moveDir)).normalized;
 
         moveAmount = cameraRelMoveDir * moveSpeed;
