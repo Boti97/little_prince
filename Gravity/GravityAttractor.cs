@@ -7,7 +7,7 @@ public class GravityAttractor : MonoBehaviour
     public Guid guid;
 
     [SerializeField]
-    protected float gravity = -100f;
+    protected float gravity = -5000f;
 
     [SerializeField]
     private float gravityPowerIndicator = 1;
@@ -31,7 +31,7 @@ public class GravityAttractor : MonoBehaviour
     //base method, this needs to be overridden for special gravity behavior
     public void Attract(GameObject body)
     {
-        Vector3 targetDir = (body.transform.position - transform.position).normalized;
+        Vector3 targetDir = GetGravityDirection(body);
         Quaternion targetRotation = Quaternion.FromToRotation(body.transform.up, targetDir) * body.transform.rotation;
 
         body.transform.rotation = Quaternion.Slerp(body.transform.rotation, targetRotation, attractTurnSpeed);
@@ -43,5 +43,10 @@ public class GravityAttractor : MonoBehaviour
     protected virtual float GetGravityPowerIndicator(GameObject body)
     {
         return GravityPowerIndicator;
+    }
+
+    protected virtual Vector3 GetGravityDirection(GameObject body)
+    {
+        return transform.up;
     }
 }

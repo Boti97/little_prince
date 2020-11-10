@@ -31,7 +31,7 @@ public class GravityBody : MonoBehaviour
 
     private void FixedUpdate()
     {
-        checkGravityAttractors();
+        //CheckGravityAttractors();
         if (gravityAttractorDictionary.Count != 0)
         {
             gravityAttractorDictionary.Select(gA => gA.Value.Key).ToList().ForEach(x => x.Attract(transform.gameObject));
@@ -67,7 +67,7 @@ public class GravityBody : MonoBehaviour
     }
 
     //checks if one or more attractors are out of our object's scope (it left them a while ago) and removes them
-    private void checkGravityAttractors()
+    private void CheckGravityAttractors()
     {
         List<Guid> attractorsToRemove = gravityAttractorDictionary
             .Where(gA => gA.Value.Value != 0f)
