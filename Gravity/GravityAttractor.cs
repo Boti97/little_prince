@@ -1,13 +1,13 @@
 ﻿using System;
 using UnityEngine;
 
-public class GravityAttractor : MonoBehaviour
+public abstract class GravityAttractor : MonoBehaviour
 {
     [HideInInspector]
     public Guid guid;
 
     [SerializeField]
-    protected float gravity = -5000f;
+    protected float gravityPower = -5000f;
 
     [SerializeField]
     private float gravityPowerIndicator = 1;
@@ -36,17 +36,11 @@ public class GravityAttractor : MonoBehaviour
 
         body.transform.rotation = Quaternion.Slerp(body.transform.rotation, targetRotation, attractTurnSpeed);
 
-        body.GetComponent<Rigidbody>().AddForce(targetDir * gravity / GetGravityPowerIndicator(body));
+        body.GetComponent<Rigidbody>().AddForce(targetDir * gravityPower / GetGravityPowerIndicator(body));
     }
 
     //if only the power of the gravity needs to be modified, only this method needs to be overridden
-    protected virtual float GetGravityPowerIndicator(GameObject body)
-    {
-        return GravityPowerIndicator;
-    }
+    protected abstract float GetGravityPowerIndicator(GameObject body);
 
-    protected virtual Vector3 GetGravityDirection(GameObject body)
-    {
-        return transform.up;
-    }
+    protected abstract Vector3 GetGravityDirection(GameObject body);
 }

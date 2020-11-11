@@ -36,6 +36,11 @@ public class GravityBody : MonoBehaviour
         {
             gravityAttractorDictionary.Select(gA => gA.Value.Key).ToList().ForEach(x => x.Attract(transform.gameObject));
         }
+        else
+        {
+            rigidbody.velocity = rigidbody.velocity / 1.02f;
+            rigidbody.angularVelocity = rigidbody.angularVelocity / 1.02f;
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -74,5 +79,10 @@ public class GravityBody : MonoBehaviour
             .Where(gA => Time.realtimeSinceStartup - gA.Value.Value > 1)
             .Select(gA => gA.Key).ToList();
         attractorsToRemove.ForEach(guid => gravityAttractorDictionary.Remove(guid));
+    }
+
+    public int AttractorCount()
+    {
+        return gravityAttractorDictionary.Count;
     }
 }

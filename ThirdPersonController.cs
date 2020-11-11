@@ -1,22 +1,20 @@
-﻿using UnityEngine;
+﻿using UnityEditor.UIElements;
+using UnityEngine;
 
 public class ThirdPersonController : MonoBehaviour
 {
-    [SerializeField]
-    private LayerMask groundedMask;
-
-    [SerializeField]
-    private Transform camera;
-
     //basic objects
     private Rigidbody rigidbody;
 
     private Animator playerAnimator;
     private Transform playerModel;
+    private GravityBody gravityBody;
 
     //vectors for movement
-    private Vector3 moveAmount;
+    [SerializeField]
+    private Transform camera;
 
+    private Vector3 moveAmount;
     private Vector3 moveDir;
     private Vector3 cameraRelMoveDir;
 
@@ -24,15 +22,20 @@ public class ThirdPersonController : MonoBehaviour
     private float moveSpeed = 8f;
 
     //variables for jump
-    private bool grounded;
-
+    [SerializeField]
     private float jumpForce = 2000f;
+
+    [SerializeField]
+    private LayerMask groundedMask;
+
     private bool isJumpEnabled;
     private int numberOfJumps = 0;
+    private bool grounded;
 
     private void Start()
     {
         playerAnimator = GetComponentInChildren<Animator>();
+        gravityBody = GetComponent<GravityBody>();
         playerAnimator.SetInteger("isWalking", 0);
         rigidbody = transform.GetComponent<Rigidbody>();
         playerModel = transform.Find("Player Model");
@@ -73,14 +76,17 @@ public class ThirdPersonController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (moveDir.magnitude >= 0.1f)
+        /* move only when:
+         * user said so
+         * there are at least one attractor
+         */
+        if (moveDir.magnitude >= 0.1f && gravityBody.AttractorCount() > 0)
         {
             playerAnimator.SetInteger("isWalking", 1);
 
             Quaternion targetRotation = Quaternion.LookRotation(cameraRelMoveDir, transform.up);
             playerModel.rotation = Quaternion.Slerp(playerModel.rotation, targetRotation, turnSmoothTime * Time.deltaTime);
 
-            //move the body to that position
             rigidbody.MovePosition(rigidbody.position + moveAmount * Time.deltaTime);
         }
         else
