@@ -7,15 +7,12 @@ public class SpecialPlanetGravityAttractor : PlanetGravityAttractor
     [SerializeField]
     private LayerMask groundedMask;
 
-    private Vector3 currentGravityDirection;
-
     protected override Vector3 GetGravityDirection(GameObject body)
     {
         Ray ray = new Ray(body.transform.position, -body.transform.up);
 
         if (Physics.Raycast(ray, out RaycastHit hit, 1 + .1f, groundedMask))
         {
-            currentGravityDirection = hit.normal;
             return hit.normal;
         }
         else

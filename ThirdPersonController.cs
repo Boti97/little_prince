@@ -1,4 +1,5 @@
-﻿using UnityEditor.UIElements;
+﻿using System.Collections;
+using UnityEditor.UIElements;
 using UnityEngine;
 
 public class ThirdPersonController : MonoBehaviour
@@ -31,6 +32,7 @@ public class ThirdPersonController : MonoBehaviour
     private bool isJumpEnabled;
     private int numberOfJumps = 0;
     private bool grounded;
+    private bool justJumped;
 
     private void Start()
     {
@@ -43,6 +45,7 @@ public class ThirdPersonController : MonoBehaviour
 
     private void Update()
     {
+        //set all special animation to zero
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
         moveDir = new Vector3(horizontal, 0f, vertical).normalized;
@@ -53,10 +56,14 @@ public class ThirdPersonController : MonoBehaviour
 
         moveAmount = cameraRelMoveDir * moveSpeed;
 
+        justJumped = false;
         if (Input.GetButtonDown("Jump") && (grounded || isJumpEnabled))
         {
+            playerAnimator.SetBool("isJumped", true);
+            playerAnimator.SetInteger("isGrounded", 0);
             rigidbody.AddForce(transform.up * jumpForce);
             numberOfJumps++;
+            justJumped = true;
         }
 
         if (numberOfJumps > 1)
@@ -67,10 +74,12 @@ public class ThirdPersonController : MonoBehaviour
 
         grounded = false;
         Ray ray = new Ray(transform.position, -transform.up);
-        if (Physics.Raycast(ray, out _, 2 + .1f, groundedMask))
+        if (!justJumped && Physics.Raycast(ray, out _, 2 + .1f, groundedMask))
         {
             grounded = true;
             isJumpEnabled = true;
+            playerAnimator.SetInteger("isGrounded", 1);
+            playerAnimator.SetBool("isJumped", false);
         }
     }
 
@@ -82,7 +91,10 @@ public class ThirdPersonController : MonoBehaviour
          */
         if (moveDir.magnitude >= 0.1f && gravityBody.AttractorCount() > 0)
         {
-            playerAnimator.SetInteger("isWalking", 1);
+            if (grounded)
+            {
+                playerAnimator.SetInteger("isWalking", 1);
+            }
 
             Quaternion targetRotation = Quaternion.LookRotation(cameraRelMoveDir, transform.up);
             playerModel.rotation = Quaternion.Slerp(playerModel.rotation, targetRotation, turnSmoothTime * Time.deltaTime);
