@@ -4,12 +4,11 @@ public class PlanetGravityAttractor : GravityAttractor
 {
     protected override float GetGravityPowerIndicator(GameObject body)
     {
-        float dist = Vector3.Distance(transform.position, body.transform.position) / GravityPowerIndicator;
-        return dist;
+        return Vector3.Distance(transform.position, body.transform.position) / GravityPowerIndicator;
     }
 
     protected override Vector3 GetGravityDirection(GameObject body)
     {
-        return (body.transform.position - transform.position).normalized; ;
+        return (body.transform.position - transform.position).normalized;
     }
 }
