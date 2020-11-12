@@ -74,12 +74,20 @@ public class ThirdPersonController : MonoBehaviour
 
         grounded = false;
         Ray ray = new Ray(transform.position, -transform.up);
-        if (!justJumped && Physics.Raycast(ray, out _, 2 + .1f, groundedMask))
+        if (!justJumped && Physics.Raycast(ray, out RaycastHit hit, 2 + .1f, groundedMask))
         {
             grounded = true;
             isJumpEnabled = true;
             playerAnimator.SetInteger("isGrounded", 1);
             playerAnimator.SetBool("isJumped", false);
+            if (transform.parent != hit.transform)
+            {
+                transform.parent = hit.transform;
+            }
+        }
+        else
+        {
+            transform.parent = null;
         }
     }
 
