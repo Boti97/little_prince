@@ -1,14 +1,12 @@
-﻿using System.Collections;
-using UnityEditor.UIElements;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class ThirdPersonController : MonoBehaviour
 {
     //basic objects
-    private Rigidbody rigidbody;
-
     private Animator playerAnimator;
+
     private Transform playerModel;
+    private Transform parent;
     private GravityBody gravityBody;
 
     //vectors for movement
@@ -18,9 +16,11 @@ public class ThirdPersonController : MonoBehaviour
     private Vector3 moveAmount;
     private Vector3 moveDir;
     private Vector3 cameraRelMoveDir;
+    private Vector3 previousParentPos;
+    private Vector3 deltaParentPos;
 
-    private float turnSmoothTime = 8f;
-    private float moveSpeed = 8f;
+    private readonly float turnSmoothTime = 8f;
+    private readonly float moveSpeed = 8f;
 
     //variables for jump
     [SerializeField]
@@ -29,17 +29,17 @@ public class ThirdPersonController : MonoBehaviour
     [SerializeField]
     private LayerMask groundedMask;
 
-    private bool isJumpEnabled;
     private int numberOfJumps = 0;
+
+    private bool isJumpEnabled;
     private bool grounded;
-    private bool justJumped;
+    private bool isMooving;
 
     private void Start()
     {
         playerAnimator = GetComponentInChildren<Animator>();
         gravityBody = GetComponent<GravityBody>();
         playerAnimator.SetInteger("isWalking", 0);
-        rigidbody = transform.GetComponent<Rigidbody>();
         playerModel = transform.Find("Player Model");
     }
 
@@ -56,14 +56,14 @@ public class ThirdPersonController : MonoBehaviour
 
         moveAmount = cameraRelMoveDir * moveSpeed;
 
-        justJumped = false;
         if (Input.GetButtonDown("Jump") && (grounded || isJumpEnabled))
         {
             playerAnimator.SetBool("isJumped", true);
             playerAnimator.SetInteger("isGrounded", 0);
-            rigidbody.AddForce(transform.up * jumpForce);
+            transform.parent = null;
+            GetComponent<Rigidbody>().AddForce(transform.up * jumpForce);
             numberOfJumps++;
-            justJumped = true;
+            grounded = false;
         }
 
         if (numberOfJumps > 1)
@@ -72,46 +72,49 @@ public class ThirdPersonController : MonoBehaviour
             numberOfJumps = 0;
         }
 
-        grounded = false;
         Ray ray = new Ray(transform.position, -transform.up);
-        if (!justJumped && Physics.Raycast(ray, out RaycastHit hit, 2 + .1f, groundedMask))
+        if (!isMooving && Physics.Raycast(ray, out RaycastHit hit, 2 + .1f, groundedMask))
         {
             grounded = true;
             isJumpEnabled = true;
+
             playerAnimator.SetInteger("isGrounded", 1);
             playerAnimator.SetBool("isJumped", false);
-            if (transform.parent != hit.transform)
-            {
-                transform.parent = hit.transform;
-            }
-        }
-        else
-        {
-            transform.parent = null;
+
+            parent = hit.transform;
+            transform.parent = parent;
         }
     }
 
-    private void FixedUpdate()
+    private void LateUpdate()
     {
         /* move only when:
-         * user said so
-         * there are at least one attractor
+         * - player is grounded and
+         * - user said so and
+         * - there are at least one attractor
          */
-        if (moveDir.magnitude >= 0.1f && gravityBody.AttractorCount() > 0)
+        if (grounded && moveDir.magnitude >= 0.1f && gravityBody.AttractorCount() > 0)
         {
             if (grounded)
             {
                 playerAnimator.SetInteger("isWalking", 1);
             }
 
+            deltaParentPos = parent.position - previousParentPos;
+            previousParentPos = parent.position;
+            transform.parent = null;
+
             Quaternion targetRotation = Quaternion.LookRotation(cameraRelMoveDir, transform.up);
             playerModel.rotation = Quaternion.Slerp(playerModel.rotation, targetRotation, turnSmoothTime * Time.deltaTime);
+            GetComponent<Rigidbody>().MovePosition(GetComponent<Rigidbody>().position + deltaParentPos + moveAmount * Time.deltaTime);
 
-            rigidbody.MovePosition(rigidbody.position + moveAmount * Time.deltaTime);
+            isMooving = true;
         }
         else
         {
             playerAnimator.SetInteger("isWalking", 0);
+
+            isMooving = false;
         }
     }
 }

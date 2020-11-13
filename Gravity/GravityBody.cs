@@ -47,6 +47,7 @@ public class GravityBody : MonoBehaviour
     {
         if (other.gameObject.layer.Equals(LayerMask.NameToLayer("GravityField")))
         {
+            transform.parent = other.transform;
             GravityAttractor gravityAttractor = other.gameObject.GetComponentInParent<GravityAttractor>();
             if (gravityAttractorDictionary.ContainsKey(gravityAttractor.guid))
             {

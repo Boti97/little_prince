@@ -15,8 +15,6 @@ public class PlanetMovement : MonoBehaviour
 
     private void Start()
     {
-        //rotationSpeed = Random.Range(0.0f, 1.0f);
-        //axis = VectorExtensions.RandomAxis();
         selfRotationSpeed = Random.Range(0.0f, 10.0f);
     }
 
