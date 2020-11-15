@@ -11,16 +11,18 @@ public class PlanetMovement : MonoBehaviour
 
     private Vector3 axis = Vector3.up;
     private readonly float rotationSpeed = 1f;
-    private float selfRotationSpeed;
+    private float selfRotationSpeed = 10f;
+    private Vector3 selfRotationAxis = Vector3.up;
 
     private void Start()
     {
-        selfRotationSpeed = Random.Range(0.0f, 10.0f);
+        selfRotationSpeed = Random.Range(0.0f, selfRotationSpeed);
+        selfRotationAxis = VectorExtensions.RandomAxis();
     }
 
     private void Update()
     {
         transform.RotateAround(orbitCenter.position, axis, rotationSpeed * Time.deltaTime);
-        transform.RotateAround(transform.position, axis, selfRotationSpeed * Time.deltaTime);
+        transform.RotateAround(transform.position, selfRotationAxis, selfRotationSpeed * Time.deltaTime);
     }
 }

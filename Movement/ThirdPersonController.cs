@@ -22,6 +22,8 @@ public class ThirdPersonController : MonoBehaviour
     private readonly float turnSmoothTime = 8f;
     private readonly float moveSpeed = 8f;
 
+    private bool isMooving;
+
     //variables for jump
     [SerializeField]
     private float jumpForce = 2000f;
@@ -33,7 +35,7 @@ public class ThirdPersonController : MonoBehaviour
 
     private bool isJumpEnabled;
     private bool grounded;
-    private bool isMooving;
+    private bool isJumping;
 
     private void Start()
     {
@@ -45,45 +47,11 @@ public class ThirdPersonController : MonoBehaviour
 
     private void Update()
     {
-        //set all special animation to zero
-        float horizontal = Input.GetAxisRaw("Horizontal");
-        float vertical = Input.GetAxisRaw("Vertical");
-        moveDir = new Vector3(horizontal, 0f, vertical).normalized;
+        CalculateMovingDirection();
 
-        Vector3 cameraRelFaceDir = Vector3.ProjectOnPlane(camera.forward, transform.up).normalized;
-        float anglePlayerForwCameraForw = Vector3.SignedAngle(cameraRelFaceDir, transform.forward, transform.up);
-        cameraRelMoveDir = (Quaternion.AngleAxis(-anglePlayerForwCameraForw, transform.up) * transform.TransformDirection(moveDir)).normalized;
+        HandleJump();
 
-        moveAmount = cameraRelMoveDir * moveSpeed;
-
-        if (Input.GetButtonDown("Jump") && (grounded || isJumpEnabled))
-        {
-            playerAnimator.SetBool("isJumped", true);
-            playerAnimator.SetInteger("isGrounded", 0);
-            transform.parent = null;
-            GetComponent<Rigidbody>().AddForce(transform.up * jumpForce);
-            numberOfJumps++;
-            grounded = false;
-        }
-
-        if (numberOfJumps > 1)
-        {
-            isJumpEnabled = false;
-            numberOfJumps = 0;
-        }
-
-        Ray ray = new Ray(transform.position, -transform.up);
-        if (!isMooving && Physics.Raycast(ray, out RaycastHit hit, 2 + .1f, groundedMask))
-        {
-            grounded = true;
-            isJumpEnabled = true;
-
-            playerAnimator.SetInteger("isGrounded", 1);
-            playerAnimator.SetBool("isJumped", false);
-
-            parent = hit.transform;
-            transform.parent = parent;
-        }
+        HandleLanding();
     }
 
     private void LateUpdate()
@@ -115,6 +83,56 @@ public class ThirdPersonController : MonoBehaviour
             playerAnimator.SetInteger("isWalking", 0);
 
             isMooving = false;
+        }
+    }
+
+    private void HandleJump()
+    {
+        if (Input.GetButtonDown("Jump") && (grounded || isJumpEnabled))
+        {
+            playerAnimator.SetBool("isJumped", true);
+            playerAnimator.SetInteger("isGrounded", 0);
+            transform.parent = null;
+            GetComponent<Rigidbody>().AddForce(transform.up * jumpForce);
+            numberOfJumps++;
+            grounded = false;
+            isJumping = true;
+        }
+        else { isJumping = false; }
+
+        if (numberOfJumps > 1)
+        {
+            isJumpEnabled = false;
+            numberOfJumps = 0;
+        }
+    }
+
+    private void CalculateMovingDirection()
+    {
+        float horizontal = Input.GetAxisRaw("Horizontal");
+        float vertical = Input.GetAxisRaw("Vertical");
+        moveDir = new Vector3(horizontal, 0f, vertical).normalized;
+
+        Vector3 cameraRelFaceDir = Vector3.ProjectOnPlane(camera.forward, transform.up).normalized;
+        float anglePlayerForwCameraForw = Vector3.SignedAngle(cameraRelFaceDir, transform.forward, transform.up);
+        cameraRelMoveDir = (Quaternion.AngleAxis(-anglePlayerForwCameraForw, transform.up) * transform.TransformDirection(moveDir)).normalized;
+
+        moveAmount = cameraRelMoveDir * moveSpeed;
+    }
+
+    private void HandleLanding()
+    {
+        Ray ray = new Ray(transform.position, -transform.up);
+        if (!isJumping && !isMooving && Physics.Raycast(ray, out RaycastHit hit, 2 + .1f, groundedMask))
+        {
+            grounded = true;
+            isJumpEnabled = true;
+
+            playerAnimator.SetInteger("isGrounded", 1);
+            playerAnimator.SetBool("isJumped", false);
+
+            parent = hit.transform;
+            transform.parent = parent;
         }
     }
 }
