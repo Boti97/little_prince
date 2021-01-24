@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlanetMovement : MonoBehaviour
+public class PlanetBehaviour : MonoBehaviour
 {
     [SerializeField]
     private Transform orbitCenter;
@@ -10,8 +10,8 @@ public class PlanetMovement : MonoBehaviour
     protected float attractTurnSpeed = 0.1f;
 
     private Vector3 axis = Vector3.up;
-    private readonly float rotationSpeed = 1f;
-    private float selfRotationSpeed = 10f;
+    private readonly float rotationSpeed = 0f;
+    private float selfRotationSpeed = 0f;
     private Vector3 selfRotationAxis = Vector3.up;
 
     private void Start()
