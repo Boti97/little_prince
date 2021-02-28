@@ -34,7 +34,7 @@ public class EnemyBehaviour : CharacterBehavior
 
     protected override void InitializeCharacterSpecificFields()
     {
-        throw new System.NotImplementedException();
+        return;
     }
 
     private bool isPlayerOnSamePlanet()

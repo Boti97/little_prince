@@ -9,12 +9,10 @@ public class SunBehaviour : MonoBehaviour
     [SerializeField]
     private float selfRotationSpeed;
 
+    public float SelfRotationSpeed { get => selfRotationSpeed; set => selfRotationSpeed = value; }
+
     private void Update()
     {
-        transform.RotateAround(transform.position, axis, selfRotationSpeed * Time.deltaTime);
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
+        transform.RotateAround(transform.position, axis, SelfRotationSpeed * Time.deltaTime);
     }
 }
