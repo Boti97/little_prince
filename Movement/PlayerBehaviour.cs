@@ -6,7 +6,7 @@ using UnityEngine;
 public class PlayerBehaviour : CharacterBehavior
 {
     [SerializeField]
-    private Transform camera;
+    private Transform localCamera;
 
     protected override void CalculateMovingDirection()
     {
@@ -14,7 +14,7 @@ public class PlayerBehaviour : CharacterBehavior
         float vertical = Input.GetAxisRaw("Vertical");
         moveDir = new Vector3(horizontal, 0f, vertical).normalized;
 
-        Vector3 cameraRelFaceDir = Vector3.ProjectOnPlane(camera.forward, transform.up).normalized;
+        Vector3 cameraRelFaceDir = Vector3.ProjectOnPlane(localCamera.forward, transform.up).normalized;
         float anglePlayerForwCameraForw = Vector3.SignedAngle(cameraRelFaceDir, transform.forward, transform.up);
         finalDir = (Quaternion.AngleAxis(-anglePlayerForwCameraForw, transform.up) * transform.TransformDirection(moveDir)).normalized;
     }
@@ -23,8 +23,8 @@ public class PlayerBehaviour : CharacterBehavior
     {
         if (Input.GetButtonDown("Jump") && (grounded || isJumpEnabled))
         {
-            animator.SetBool("isJumped", true);
-            animator.SetInteger("isGrounded", 0);
+            SetAnimation("isJumped", 1);
+            SetAnimation("isGrounded", 0);
 
             GetComponent<Rigidbody>().AddForce(transform.up * jumpForce);
             numberOfJumps++;
@@ -44,7 +44,7 @@ public class PlayerBehaviour : CharacterBehavior
     {
         if (!entity.IsOwner) return;
 
-        camera = Camera.main.gameObject.transform;
+        localCamera = Camera.main.gameObject.transform;
 
         CinemachineFreeLook cinemachineVirtualCamera = GameObject.Find("Third Person Camera").GetComponent<CinemachineFreeLook>();
         cinemachineVirtualCamera.LookAt = gameObject.transform;

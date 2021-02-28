@@ -22,7 +22,7 @@ public abstract class CharacterBehavior : EntityBehaviour<IPlayerState>
     private readonly float turnSmoothTime = 8f;
     protected readonly float moveSpeed = 8f;
 
-    protected bool isMooving;
+    protected bool isMoving;
 
     //variables for jump
     [SerializeField]
@@ -40,14 +40,14 @@ public abstract class CharacterBehavior : EntityBehaviour<IPlayerState>
     public override void Attached()
     {
         state.SetTransforms(state.PlayerTransform, transform);
-        state.SetDynamic("ModelRotation", transform.Find("Model").rotation);
 
         InitializeCharacterSpecificFields();
 
         animator = GetComponentInChildren<Animator>();
         gravityBody = GetComponent<GravityBody>();
-        animator.SetInteger("isWalking", 0);
         model = transform.Find("Model");
+
+        SetAnimation("isWalking", 0);
     }
 
     private void Update()
@@ -55,6 +55,9 @@ public abstract class CharacterBehavior : EntityBehaviour<IPlayerState>
         if (!entity.IsOwner)
         {
             transform.Find("Model").rotation = (Quaternion)state.GetDynamic("ModelRotation");
+            GetAnimation("isGrounded");
+            GetAnimation("isWalking");
+            GetAnimation("isJumped");
             return;
         }
 
@@ -78,20 +81,20 @@ public abstract class CharacterBehavior : EntityBehaviour<IPlayerState>
         {
             if (grounded)
             {
-                animator.SetInteger("isWalking", 1);
+                SetAnimation("isWalking", 1);
             }
 
             Quaternion targetRotation = Quaternion.LookRotation(finalDir, transform.up);
             model.rotation = Quaternion.Slerp(model.rotation, targetRotation, turnSmoothTime * BoltNetwork.FrameDeltaTime);
             GetComponent<Rigidbody>().MovePosition(GetComponent<Rigidbody>().position + (finalDir * moveSpeed) * BoltNetwork.FrameDeltaTime);
 
-            isMooving = true;
+            isMoving = true;
         }
         else
         {
-            animator.SetInteger("isWalking", 0);
+            SetAnimation("isWalking", 0);
 
-            isMooving = false;
+            isMoving = false;
         }
 
         state.SetDynamic("ModelRotation", transform.Find("Model").rotation);
@@ -106,13 +109,13 @@ public abstract class CharacterBehavior : EntityBehaviour<IPlayerState>
     private void HandleLanding()
     {
         Ray ray = new Ray(transform.position, -transform.up);
-        if (!isJumping && !isMooving && Physics.Raycast(ray, out RaycastHit hit, 2 + .1f, groundedMask))
+        if (!isJumping && !isMoving && Physics.Raycast(ray, out RaycastHit hit, 2 + .1f, groundedMask))
         {
             grounded = true;
             isJumpEnabled = true;
 
-            animator.SetInteger("isGrounded", 1);
-            animator.SetBool("isJumped", false);
+            SetAnimation("isGrounded", 1);
+            SetAnimation("isJumped", 0);
 
             if (hit.collider.gameObject.GetComponentInParent<GravityAttractor>() != null
                 && hit.collider.gameObject.GetComponentInParent<GravityAttractor>().guid != planet)
@@ -120,5 +123,45 @@ public abstract class CharacterBehavior : EntityBehaviour<IPlayerState>
                 planet = hit.collider.gameObject.GetComponentInParent<GravityAttractor>().guid;
             }
         }
+    }
+
+    protected void SetAnimation(string nameOfAnimation, int value)
+    {
+        animator.SetInteger(nameOfAnimation, value);
+        switch (nameOfAnimation)
+        {
+            case "isGrounded":
+                state.isGrounded = value;
+                break;
+
+            case "isWalking":
+                state.isWalking = value;
+                break;
+
+            case "isJumped":
+                state.isJumped = value;
+                break;
+        };
+    }
+
+    protected void GetAnimation(string nameOfAnimation)
+    {
+        int value = 0;
+        switch (nameOfAnimation)
+        {
+            case "isGrounded":
+                value = state.isGrounded;
+                break;
+
+            case "isWalking":
+                value = state.isWalking;
+                break;
+
+            case "isJumped":
+                value = state.isJumped;
+                break;
+        };
+
+        animator.SetInteger(nameOfAnimation, value);
     }
 }
