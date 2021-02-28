@@ -32,6 +32,11 @@ public class EnemyBehaviour : CharacterBehavior
         }
     }
 
+    protected override void InitializeCharacterSpecificFields()
+    {
+        throw new System.NotImplementedException();
+    }
+
     private bool isPlayerOnSamePlanet()
     {
         return player.GetComponent<PlayerBehaviour>().planet == planet;

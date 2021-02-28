@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Bolt;
+using System;
 using UnityEngine;
 
-public abstract class CharacterBehavior : MonoBehaviour
+public abstract class CharacterBehavior : EntityBehaviour<IPlayerState>
 {
     //basic objects
     [HideInInspector]
@@ -10,15 +11,13 @@ public abstract class CharacterBehavior : MonoBehaviour
     protected Animator animator;
 
     private Transform model;
-    protected Transform parent;
+
     private GravityBody gravityBody;
 
     //vectors for movement
     protected Vector3 moveDir;
 
     protected Vector3 finalDir;
-    private Vector3 previousParentPos;
-    private Vector3 deltaParentPos;
 
     private readonly float turnSmoothTime = 8f;
     protected readonly float moveSpeed = 8f;
@@ -38,8 +37,13 @@ public abstract class CharacterBehavior : MonoBehaviour
     protected bool grounded;
     protected bool isJumping;
 
-    private void Start()
+    public override void Attached()
     {
+        state.SetTransforms(state.PlayerTransform, transform);
+        state.SetDynamic("ModelRotation", transform.Find("Model").rotation);
+
+        InitializeCharacterSpecificFields();
+
         animator = GetComponentInChildren<Animator>();
         gravityBody = GetComponent<GravityBody>();
         animator.SetInteger("isWalking", 0);
@@ -48,6 +52,12 @@ public abstract class CharacterBehavior : MonoBehaviour
 
     private void Update()
     {
+        if (!entity.IsOwner)
+        {
+            transform.Find("Model").rotation = (Quaternion)state.GetDynamic("ModelRotation");
+            return;
+        }
+
         CalculateMovingDirection();
 
         HandleJump();
@@ -57,6 +67,8 @@ public abstract class CharacterBehavior : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (!entity.IsOwner) return;
+
         /* move only when:
          * - character is grounded and
          * - user said so and
@@ -69,13 +81,9 @@ public abstract class CharacterBehavior : MonoBehaviour
                 animator.SetInteger("isWalking", 1);
             }
 
-            deltaParentPos = parent.position - previousParentPos;
-            previousParentPos = parent.position;
-            transform.parent = null;
-
             Quaternion targetRotation = Quaternion.LookRotation(finalDir, transform.up);
-            model.rotation = Quaternion.Slerp(model.rotation, targetRotation, turnSmoothTime * Time.deltaTime);
-            GetComponent<Rigidbody>().MovePosition(GetComponent<Rigidbody>().position + deltaParentPos + (finalDir * moveSpeed) * Time.deltaTime);
+            model.rotation = Quaternion.Slerp(model.rotation, targetRotation, turnSmoothTime * BoltNetwork.FrameDeltaTime);
+            GetComponent<Rigidbody>().MovePosition(GetComponent<Rigidbody>().position + (finalDir * moveSpeed) * BoltNetwork.FrameDeltaTime);
 
             isMooving = true;
         }
@@ -85,11 +93,15 @@ public abstract class CharacterBehavior : MonoBehaviour
 
             isMooving = false;
         }
+
+        state.SetDynamic("ModelRotation", transform.Find("Model").rotation);
     }
 
     protected abstract void CalculateMovingDirection();
 
     protected abstract void HandleJump();
+
+    protected abstract void InitializeCharacterSpecificFields();
 
     private void HandleLanding()
     {
@@ -102,14 +114,10 @@ public abstract class CharacterBehavior : MonoBehaviour
             animator.SetInteger("isGrounded", 1);
             animator.SetBool("isJumped", false);
 
-            parent = hit.transform;
-            transform.parent = parent;
-
             if (hit.collider.gameObject.GetComponentInParent<GravityAttractor>() != null
                 && hit.collider.gameObject.GetComponentInParent<GravityAttractor>().guid != planet)
             {
                 planet = hit.collider.gameObject.GetComponentInParent<GravityAttractor>().guid;
-                Debug.Log("CHANGED");
             }
         }
     }

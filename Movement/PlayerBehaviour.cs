@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Cinemachine;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -24,7 +25,7 @@ public class PlayerBehaviour : CharacterBehavior
         {
             animator.SetBool("isJumped", true);
             animator.SetInteger("isGrounded", 0);
-            transform.parent = null;
+
             GetComponent<Rigidbody>().AddForce(transform.up * jumpForce);
             numberOfJumps++;
             grounded = false;
@@ -37,5 +38,16 @@ public class PlayerBehaviour : CharacterBehavior
             isJumpEnabled = false;
             numberOfJumps = 0;
         }
+    }
+
+    protected override void InitializeCharacterSpecificFields()
+    {
+        if (!entity.IsOwner) return;
+
+        camera = Camera.main.gameObject.transform;
+
+        CinemachineFreeLook cinemachineVirtualCamera = GameObject.Find("Third Person Camera").GetComponent<CinemachineFreeLook>();
+        cinemachineVirtualCamera.LookAt = gameObject.transform;
+        cinemachineVirtualCamera.Follow = gameObject.transform;
     }
 }

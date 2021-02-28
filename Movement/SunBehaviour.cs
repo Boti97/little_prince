@@ -20,6 +20,5 @@ public class SunBehaviour : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Destroy(other.gameObject);
     }
 }

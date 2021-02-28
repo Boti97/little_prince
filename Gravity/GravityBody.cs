@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Bolt;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class GravityBody : MonoBehaviour
+public class GravityBody : EntityBehaviour<IPlayerState>
 {
     [SerializeField]
     private GameObject initialAttractor;
@@ -15,8 +16,10 @@ public class GravityBody : MonoBehaviour
     private Dictionary<Guid, KeyValuePair<GravityAttractor, float>> gravityAttractorDictionary;
     private Rigidbody rigidbody;
 
-    private void Start()
+    public override void Attached()
     {
+        if (!entity.IsOwner) return;
+
         gravityAttractorDictionary = new Dictionary<Guid, KeyValuePair<GravityAttractor, float>>();
         //it is not mandatory to add an initial attractor
         if (initialAttractor != null)
@@ -29,8 +32,10 @@ public class GravityBody : MonoBehaviour
         rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
     }
 
-    private void FixedUpdate()
+    public void FixedUpdate()
     {
+        if (!entity.IsOwner) return;
+
         //CheckGravityAttractors();
         if (gravityAttractorDictionary.Count != 0)
         {
@@ -45,9 +50,10 @@ public class GravityBody : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (!entity.IsOwner) return;
+
         if (other.gameObject.layer.Equals(LayerMask.NameToLayer("GravityField")))
         {
-            transform.parent = other.transform;
             GravityAttractor gravityAttractor = other.gameObject.GetComponentInParent<GravityAttractor>();
             if (gravityAttractorDictionary.ContainsKey(gravityAttractor.guid))
             {
@@ -64,6 +70,8 @@ public class GravityBody : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
+        if (!entity.IsOwner) return;
+
         GravityAttractor gravityAttractor = other.gameObject.GetComponentInParent<GravityAttractor>();
 
         if (other.gameObject.layer.Equals(LayerMask.NameToLayer("GravityField")))
@@ -84,6 +92,7 @@ public class GravityBody : MonoBehaviour
 
     public int AttractorCount()
     {
+        if (!entity.IsOwner) return 0;
         return gravityAttractorDictionary.Count;
     }
 }
