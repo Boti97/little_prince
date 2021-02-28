@@ -6,12 +6,8 @@ public class SunBehaviour : MonoBehaviour
 {
     private Vector3 axis = -Vector3.up;
 
+    [SerializeField]
     private float selfRotationSpeed;
-
-    private void Start()
-    {
-        selfRotationSpeed = Random.Range(0.0f, 10.0f);
-    }
 
     private void Update()
     {
