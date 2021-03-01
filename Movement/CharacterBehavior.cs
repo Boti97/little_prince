@@ -52,6 +52,8 @@ public abstract class CharacterBehavior : EntityBehaviour<IPlayerState>
 
     private void Update()
     {
+        CheckOnGround();
+
         if (!entity.IsOwner)
         {
             transform.Find("Model").rotation = (Quaternion)state.GetDynamic("ModelRotation");
@@ -64,8 +66,6 @@ public abstract class CharacterBehavior : EntityBehaviour<IPlayerState>
         CalculateMovingDirection();
 
         HandleJump();
-
-        HandleLanding();
     }
 
     private void LateUpdate()
@@ -106,25 +106,6 @@ public abstract class CharacterBehavior : EntityBehaviour<IPlayerState>
 
     protected abstract void InitializeCharacterSpecificFields();
 
-    private void HandleLanding()
-    {
-        Ray ray = new Ray(transform.position, -transform.up);
-        if (!isJumping && !isMoving && Physics.Raycast(ray, out RaycastHit hit, 2 + .1f, groundedMask))
-        {
-            grounded = true;
-            isJumpEnabled = true;
-
-            SetAnimation("isGrounded", 1);
-            SetAnimation("isJumped", 0);
-
-            if (hit.collider.gameObject.GetComponentInParent<GravityAttractor>() != null
-                && hit.collider.gameObject.GetComponentInParent<GravityAttractor>().guid != planet)
-            {
-                planet = hit.collider.gameObject.GetComponentInParent<GravityAttractor>().guid;
-            }
-        }
-    }
-
     protected void SetAnimation(string nameOfAnimation, int value)
     {
         animator.SetInteger(nameOfAnimation, value);
@@ -163,5 +144,27 @@ public abstract class CharacterBehavior : EntityBehaviour<IPlayerState>
         };
 
         animator.SetInteger(nameOfAnimation, value);
+    }
+
+    private void CheckOnGround()
+    {
+        Ray ray = new Ray(transform.position, -transform.up);
+        if (Physics.Raycast(ray, out RaycastHit hit, 2 + .1f, groundedMask))
+        {
+            if (!isJumping && !isMoving)
+            {
+                grounded = true;
+                isJumpEnabled = true;
+
+                SetAnimation("isGrounded", 1);
+                SetAnimation("isJumped", 0);
+            }
+
+            if (hit.collider.gameObject.GetComponentInParent<GravityAttractor>() != null
+                && hit.collider.gameObject.GetComponentInParent<GravityAttractor>().guid != planet)
+            {
+                planet = hit.collider.gameObject.GetComponentInParent<GravityAttractor>().guid;
+            }
+        }
     }
 }

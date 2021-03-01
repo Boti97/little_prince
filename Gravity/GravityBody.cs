@@ -10,11 +10,7 @@ public class GravityBody : EntityBehaviour<IPlayerState>
     [SerializeField]
     private GameObject initialAttractor;
 
-    [SerializeField]
-    private float attractorPowerIndicator = 1;
-
     private Dictionary<Guid, KeyValuePair<GravityAttractor, float>> gravityAttractorDictionary;
-    private Rigidbody rigidbody;
 
     public override void Attached()
     {
@@ -27,9 +23,8 @@ public class GravityBody : EntityBehaviour<IPlayerState>
             GravityAttractor gravityAttractor = initialAttractor.GetComponent<GravityAttractor>();
             gravityAttractorDictionary.Add(gravityAttractor.guid, new KeyValuePair<GravityAttractor, float>(gravityAttractor, 0f));
         }
-        rigidbody = transform.GetComponent<Rigidbody>();
-        rigidbody.useGravity = false;
-        rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
+        GetComponent<Rigidbody>().useGravity = false;
+        GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
     }
 
     public void FixedUpdate()
@@ -43,8 +38,8 @@ public class GravityBody : EntityBehaviour<IPlayerState>
         }
         else
         {
-            rigidbody.velocity = rigidbody.velocity / 1.02f;
-            rigidbody.angularVelocity = rigidbody.angularVelocity / 1.02f;
+            GetComponent<Rigidbody>().velocity = GetComponent<Rigidbody>().velocity / 1.02f;
+            GetComponent<Rigidbody>().angularVelocity = GetComponent<Rigidbody>().angularVelocity / 1.02f;
         }
     }
 
