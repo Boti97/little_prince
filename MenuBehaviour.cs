@@ -1,6 +1,8 @@
 using UnityEngine;
+using Bolt;
+using UnityEngine.SceneManagement;
 
-public class MenuBehaviour : MonoBehaviour
+public class MenuBehaviour : GlobalEventListener
 {
     [SerializeField]
     private GameObject menu;
@@ -12,5 +14,16 @@ public class MenuBehaviour : MonoBehaviour
             if (menu.activeSelf) menu.SetActive(false);
             else menu.SetActive(true);
         }
+    }
+
+    public void OnExitClick()
+    {
+        SceneManager.LoadScene("Start");
+        BoltLauncher.Shutdown();
+    }
+
+    public void OnResumeClick()
+    {
+        menu.SetActive(false);
     }
 }

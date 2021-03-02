@@ -43,6 +43,6 @@ public class Menu : GlobalEventListener
 
     private void StartSun()
     {
-        GameObject.Find("Sun").GetComponentInChildren<SunBehaviour>().SelfRotationSpeed = 20;
+        GameObject.Find("Sun").GetComponentInChildren<SunBehaviour>().SelfRotationSpeed = 10;
     }
 }

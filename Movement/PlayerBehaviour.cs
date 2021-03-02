@@ -14,6 +14,8 @@ public class PlayerBehaviour : CharacterBehavior
     private Slider healthBar;
     private GameObject gameOverText;
 
+    private bool hitZeroStamina;
+
     public void RefreshPlayerList()
     {
         players.Clear();
@@ -71,11 +73,16 @@ public class PlayerBehaviour : CharacterBehavior
 
     protected override void HandleSprint()
     {
-        if (Input.GetKey(KeyCode.LeftShift) && stamina > 0f)
+        if (Input.GetKey(KeyCode.LeftShift) && stamina > 0f && !hitZeroStamina)
         {
             moveSpeed = sprintSpeed;
-            stamina -= 0.001f;
+            stamina -= 0.003f;
             staminaBar.value = stamina;
+
+            if (stamina < 0.005)
+            {
+                hitZeroStamina = true;
+            }
         }
         else
         {
@@ -83,6 +90,10 @@ public class PlayerBehaviour : CharacterBehavior
             {
                 stamina += 0.0005f;
                 staminaBar.value = stamina;
+            }
+            if (stamina > 0.3f)
+            {
+                hitZeroStamina = false;
             }
             moveSpeed = walkSpeed;
         }
