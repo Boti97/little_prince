@@ -14,6 +14,12 @@ public class EnemyBehaviour : CharacterBehavior
     private List<GameObject> players = new List<GameObject>();
     private GameObject playerToFollow;
 
+    public void RefreshPlayerList()
+    {
+        players.Clear();
+        players.AddRange(GameObject.FindGameObjectsWithTag("Player"));
+    }
+
     protected override void CalculateMovingDirection()
     {
         //if we did not choose a player to follow yet, or the player we followed jumped to another planet as us, we choose one
@@ -63,17 +69,6 @@ public class EnemyBehaviour : CharacterBehavior
         }
     }
 
-    protected override void HandleJump()
-    {
-        isJumping = false;
-
-        if (numberOfJumps > 1)
-        {
-            isJumpEnabled = false;
-            numberOfJumps = 0;
-        }
-    }
-
     protected override void InitializeCharacterSpecificFields()
     {
         players.AddRange(GameObject.FindGameObjectsWithTag("Player"));
@@ -84,9 +79,21 @@ public class EnemyBehaviour : CharacterBehavior
         return player.GetComponent<PlayerBehaviour>().planet == planet;
     }
 
-    public void RefreshPlayerList()
+    protected override void HandleSprint()
     {
-        players.Clear();
-        players.AddRange(GameObject.FindGameObjectsWithTag("Player"));
+        //TODO: implement enemy sprint
+        return;
+    }
+
+    protected override void CheckHealth()
+    {
+        //TODO: implement enemy health handling
+        return;
+    }
+
+    protected override void HandleJump()
+    {
+        //TODO: implement jumping
+        return;
     }
 }

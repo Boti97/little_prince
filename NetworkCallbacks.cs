@@ -18,8 +18,8 @@ public class NetworkCallbacks : GlobalEventListener
 
         if (BoltNetwork.IsServer)
         {
-            Vector3 enemySpawnPos = new Vector3(-19.08f + Random.Range(-10, 10), 108f, 456f);
-            BoltNetwork.Instantiate(leadSoldierPrefab, enemySpawnPos, Quaternion.identity);
+            //Vector3 enemySpawnPos = new Vector3(-19.08f + Random.Range(-10, 10), 108f, 456f);
+            //BoltNetwork.Instantiate(leadSoldierPrefab, enemySpawnPos, Quaternion.identity);
 
             //Vector3 enemySpawnPos2 = new Vector3(-19.08f + Random.Range(-10, 10), 108f, 456f);
             //BoltNetwork.Instantiate(leadSoldierPrefab, enemySpawnPos2, Quaternion.identity);

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerBehaviour : CharacterBehavior
 {
@@ -9,6 +10,15 @@ public class PlayerBehaviour : CharacterBehavior
     private Transform localCamera;
 
     private List<GameObject> players = new List<GameObject>();
+
+    private Slider staminaBar;
+    private Slider healthBar;
+
+    public void RefreshPlayerList()
+    {
+        players.Clear();
+        players.AddRange(GameObject.FindGameObjectsWithTag("Player"));
+    }
 
     protected override void CalculateMovingDirection()
     {
@@ -23,7 +33,7 @@ public class PlayerBehaviour : CharacterBehavior
 
     protected override void HandleJump()
     {
-        if (Input.GetButtonDown("Jump") && (grounded || isJumpEnabled))
+        if (Input.GetKeyDown(KeyCode.Space) && (grounded || isJumpEnabled))
         {
             SetAnimation("isJumped", 1);
             SetAnimation("isGrounded", 0);
@@ -51,11 +61,36 @@ public class PlayerBehaviour : CharacterBehavior
         CinemachineFreeLook cinemachineVirtualCamera = GameObject.Find("Third Person Camera").GetComponent<CinemachineFreeLook>();
         cinemachineVirtualCamera.LookAt = gameObject.transform;
         cinemachineVirtualCamera.Follow = gameObject.transform;
+
+        staminaBar = GameObject.FindGameObjectWithTag("StaminaBar").GetComponent<Slider>();
+        healthBar = GameObject.FindGameObjectWithTag("HealthBar").GetComponent<Slider>();
     }
 
-    public void RefreshPlayerList()
+    protected override void HandleSprint()
     {
-        players.Clear();
-        players.AddRange(GameObject.FindGameObjectsWithTag("Player"));
+        if (Input.GetKey(KeyCode.LeftShift) && stamina > 0f)
+        {
+            moveSpeed = sprintSpeed;
+            stamina -= 0.001f;
+            staminaBar.value = stamina;
+        }
+        else
+        {
+            if (stamina < 1f)
+            {
+                stamina += 0.0005f;
+                staminaBar.value = stamina;
+            }
+            moveSpeed = walkSpeed;
+        }
+    }
+
+    protected override void CheckHealth()
+    {
+        if (gravityBody.AttractorCount() == 0)
+        {
+            health -= 0.002f;
+            healthBar.value = health;
+        }
     }
 }

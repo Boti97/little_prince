@@ -12,15 +12,27 @@ public abstract class CharacterBehavior : EntityBehaviour<IPlayerState>
 
     private Transform model;
 
-    private GravityBody gravityBody;
+    protected GravityBody gravityBody;
 
-    //vectors for movement
+    //variables for health
+    protected float health = 1f;
+
+    //variables for movement
+    [SerializeField]
+    protected float sprintSpeed = 30f;
+
+    [SerializeField]
+    protected float walkSpeed = 0f;
+
+    protected float stamina = 1f;
+
+    protected float moveSpeed = 0f;
+
     protected Vector3 moveDir;
 
     protected Vector3 finalDir;
 
     private readonly float turnSmoothTime = 8f;
-    protected readonly float moveSpeed = 8f;
 
     protected bool isMoving;
 
@@ -50,7 +62,7 @@ public abstract class CharacterBehavior : EntityBehaviour<IPlayerState>
         SetAnimation("isWalking", 0);
     }
 
-    private void Update()
+    protected void Update()
     {
         CheckOnGround();
 
@@ -66,9 +78,13 @@ public abstract class CharacterBehavior : EntityBehaviour<IPlayerState>
         CalculateMovingDirection();
 
         HandleJump();
+
+        HandleSprint();
+
+        CheckHealth();
     }
 
-    private void LateUpdate()
+    protected void LateUpdate()
     {
         if (!entity.IsOwner) return;
 
@@ -100,9 +116,13 @@ public abstract class CharacterBehavior : EntityBehaviour<IPlayerState>
         state.SetDynamic("ModelRotation", transform.Find("Model").rotation);
     }
 
+    protected abstract void CheckHealth();
+
     protected abstract void CalculateMovingDirection();
 
     protected abstract void HandleJump();
+
+    protected abstract void HandleSprint();
 
     protected abstract void InitializeCharacterSpecificFields();
 

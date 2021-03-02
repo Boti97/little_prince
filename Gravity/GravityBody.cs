@@ -43,6 +43,12 @@ public class GravityBody : EntityBehaviour<IPlayerState>
         }
     }
 
+    public int AttractorCount()
+    {
+        if (!entity.IsOwner) return 0;
+        return gravityAttractorDictionary.Count;
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (!entity.IsOwner) return;
@@ -83,11 +89,5 @@ public class GravityBody : EntityBehaviour<IPlayerState>
             .Where(gA => Time.realtimeSinceStartup - gA.Value.Value > 1)
             .Select(gA => gA.Key).ToList();
         attractorsToRemove.ForEach(guid => gravityAttractorDictionary.Remove(guid));
-    }
-
-    public int AttractorCount()
-    {
-        if (!entity.IsOwner) return 0;
-        return gravityAttractorDictionary.Count;
     }
 }
