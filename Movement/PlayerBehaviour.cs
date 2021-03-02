@@ -1,5 +1,4 @@
 ﻿using Cinemachine;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,6 +12,7 @@ public class PlayerBehaviour : CharacterBehavior
 
     private Slider staminaBar;
     private Slider healthBar;
+    private GameObject gameOverText;
 
     public void RefreshPlayerList()
     {
@@ -58,12 +58,15 @@ public class PlayerBehaviour : CharacterBehavior
 
         localCamera = Camera.main.gameObject.transform;
 
-        CinemachineFreeLook cinemachineVirtualCamera = GameObject.Find("Third Person Camera").GetComponent<CinemachineFreeLook>();
+        CinemachineFreeLook cinemachineVirtualCamera = GameObject.FindGameObjectWithTag("ThirdPersonCamera").GetComponent<CinemachineFreeLook>();
         cinemachineVirtualCamera.LookAt = gameObject.transform;
         cinemachineVirtualCamera.Follow = gameObject.transform;
 
         staminaBar = GameObject.FindGameObjectWithTag("StaminaBar").GetComponent<Slider>();
         healthBar = GameObject.FindGameObjectWithTag("HealthBar").GetComponent<Slider>();
+
+        gameOverText = GameObject.FindGameObjectWithTag("GameOver");
+        gameOverText.SetActive(false);
     }
 
     protected override void HandleSprint()
@@ -91,6 +94,8 @@ public class PlayerBehaviour : CharacterBehavior
         {
             health -= 0.002f;
             healthBar.value = health;
+
+            if (health < 0f) gameOverText.SetActive(true);
         }
     }
 }
