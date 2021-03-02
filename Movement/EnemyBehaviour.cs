@@ -4,8 +4,14 @@ using UnityEngine;
 
 public class EnemyBehaviour : CharacterBehavior
 {
-    private List<GameObject> players = new List<GameObject>();
+    [SerializeField]
+    private float pushPower;
 
+    [SerializeField]
+    private float pushPowerAmplifier;
+
+    private int numberOfPushes = 0;
+    private List<GameObject> players = new List<GameObject>();
     private GameObject playerToFollow;
 
     protected override void CalculateMovingDirection()
@@ -43,8 +49,11 @@ public class EnemyBehaviour : CharacterBehavior
                 finalDir = Vector3.ProjectOnPlane((playerToFollow.transform.position - transform.position).normalized, transform.up).normalized;
                 moveDir = Vector3.forward;
             }
+            //if we close enough we push them into space
             else
             {
+                playerToFollow.GetComponent<Rigidbody>().AddForce(transform.Find("Model").forward * (pushPower + (numberOfPushes * pushPowerAmplifier)));
+                numberOfPushes++;
                 moveDir = Vector3.zero;
             }
         }

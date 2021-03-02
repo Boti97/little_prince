@@ -8,6 +8,8 @@ public class PlayerBehaviour : CharacterBehavior
     [SerializeField]
     private Transform localCamera;
 
+    private List<GameObject> players = new List<GameObject>();
+
     protected override void CalculateMovingDirection()
     {
         float horizontal = Input.GetAxisRaw("Horizontal");
@@ -49,5 +51,11 @@ public class PlayerBehaviour : CharacterBehavior
         CinemachineFreeLook cinemachineVirtualCamera = GameObject.Find("Third Person Camera").GetComponent<CinemachineFreeLook>();
         cinemachineVirtualCamera.LookAt = gameObject.transform;
         cinemachineVirtualCamera.Follow = gameObject.transform;
+    }
+
+    public void RefreshPlayerList()
+    {
+        players.Clear();
+        players.AddRange(GameObject.FindGameObjectsWithTag("Player"));
     }
 }
