@@ -108,9 +108,16 @@ public class PlayerBehaviour : CharacterBehaviour
 
     protected override void HandleThrust()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && thrust > 0.33f)
         {
+            thrust -= 0.33f;
+            GameObjectManager.Instance.ThrustBar.value = thrust;
             GetComponent<Rigidbody>().AddForce(localCamera.forward * thrustPower);
+        }
+        else if (thrust < 1f)
+        {
+            thrust += 0.001f;
+            GameObjectManager.Instance.ThrustBar.value = thrust;
         }
     }
 }

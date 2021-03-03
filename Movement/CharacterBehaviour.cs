@@ -21,6 +21,8 @@ public abstract class CharacterBehaviour : EntityBehaviour<IPlayerState>
     [SerializeField]
     protected float thrustPower = 50f;
 
+    protected float thrust = 1f;
+
     //variables for movement
     [SerializeField]
     protected float sprintSpeed = 30f;

@@ -9,6 +9,7 @@ public sealed class GameObjectManager : MonoBehaviour
 {
     private Slider staminaBar;
     private Slider healthBar;
+    private Slider thrustBar;
     private GameObject gameOverText;
     private CinemachineFreeLook cinemachineVirtualCamera;
 
@@ -38,6 +39,7 @@ public sealed class GameObjectManager : MonoBehaviour
     public Slider HealthBar { get => healthBar; set => healthBar = value; }
     public GameObject GameOverText { get => gameOverText; set => gameOverText = value; }
     public CinemachineFreeLook CinemachineVirtualCamera { get => cinemachineVirtualCamera; set => cinemachineVirtualCamera = value; }
+    public Slider ThrustBar { get => thrustBar; set => thrustBar = value; }
 
     private void Awake()
     {
@@ -54,6 +56,7 @@ public sealed class GameObjectManager : MonoBehaviour
     private void Start()
     {
         StaminaBar = GameObject.FindGameObjectWithTag("StaminaBar").GetComponent<Slider>();
+        ThrustBar = GameObject.FindGameObjectWithTag("ThrustBar").GetComponent<Slider>();
         HealthBar = GameObject.FindGameObjectWithTag("HealthBar").GetComponent<Slider>();
         GameOverText = GameObject.FindGameObjectWithTag("GameOver");
         CinemachineVirtualCamera = GameObject.FindGameObjectWithTag("ThirdPersonCamera").GetComponent<CinemachineFreeLook>();
