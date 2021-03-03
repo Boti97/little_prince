@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class StartSceneManager : GlobalEventListener
 {
-    private void Awake()
+    public void Awake()
     {
         //Cursor.lockState = CursorLockMode.Confined;
         //Cursor.visible = true;
@@ -43,6 +43,11 @@ public class StartSceneManager : GlobalEventListener
                 BoltMatchmaking.JoinSession(photonSession);
             }
         }
+    }
+
+    public void ExitGame()
+    {
+        Application.Quit();
     }
 
     private void StartSun()
