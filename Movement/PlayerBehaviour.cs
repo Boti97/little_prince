@@ -100,4 +100,12 @@ public class PlayerBehaviour : CharacterBehaviour
             if (health < 0f) GameObjectManager.Instance.GameOverText.SetActive(true);
         }
     }
+
+    protected override void HandleThrust()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            GetComponent<Rigidbody>().AddForce(localCamera.forward * thrustPower);
+        }
+    }
 }
