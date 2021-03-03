@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class PlayerBehaviour : CharacterBehaviour
 {
-    [SerializeField]
     private Transform localCamera;
 
     private List<GameObject> players = new List<GameObject>();
@@ -97,7 +96,13 @@ public class PlayerBehaviour : CharacterBehaviour
             health -= 0.002f;
             GameObjectManager.Instance.HealthBar.value = health;
 
-            if (health < 0f) GameObjectManager.Instance.GameOverText.SetActive(true);
+            if (health < 0f)
+            {
+                PlayerDiedEvent playerDiedEvent = PlayerDiedEvent.Create();
+                playerDiedEvent.PlayerPosition = transform.position;
+                playerDiedEvent.Send();
+                Destroy(gameObject);
+            }
         }
     }
 

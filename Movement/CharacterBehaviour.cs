@@ -30,7 +30,7 @@ public abstract class CharacterBehaviour : EntityBehaviour<IPlayerState>
 
     protected float stamina = 1f;
 
-    protected float moveSpeed = 0f;
+    protected float moveSpeed = 8f;
 
     protected Vector3 moveDir;
 

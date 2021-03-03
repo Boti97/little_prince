@@ -8,8 +8,8 @@ public class StartSceneManager : GlobalEventListener
 {
     private void Awake()
     {
-        Cursor.lockState = CursorLockMode.Confined;
-        Cursor.visible = true;
+        //Cursor.lockState = CursorLockMode.Confined;
+        //Cursor.visible = true;
     }
 
     public void StartServer()

@@ -13,7 +13,7 @@ public class MenuBehaviour : GlobalEventListener
         {
             if (menu.activeSelf) menu.SetActive(false);
             else menu.SetActive(true);
-            Cursor.visible = true;
+            //Cursor.visible = true;
         }
     }
 
