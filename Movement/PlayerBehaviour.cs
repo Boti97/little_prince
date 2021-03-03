@@ -3,16 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerBehaviour : CharacterBehavior
+public class PlayerBehaviour : CharacterBehaviour
 {
     [SerializeField]
     private Transform localCamera;
 
     private List<GameObject> players = new List<GameObject>();
-
-    private Slider staminaBar;
-    private Slider healthBar;
-    private GameObject gameOverText;
 
     private bool hitZeroStamina;
 
@@ -60,15 +56,10 @@ public class PlayerBehaviour : CharacterBehavior
 
         localCamera = Camera.main.gameObject.transform;
 
-        CinemachineFreeLook cinemachineVirtualCamera = GameObject.FindGameObjectWithTag("ThirdPersonCamera").GetComponent<CinemachineFreeLook>();
-        cinemachineVirtualCamera.LookAt = gameObject.transform;
-        cinemachineVirtualCamera.Follow = gameObject.transform;
-
-        staminaBar = GameObject.FindGameObjectWithTag("StaminaBar").GetComponent<Slider>();
-        healthBar = GameObject.FindGameObjectWithTag("HealthBar").GetComponent<Slider>();
-
-        gameOverText = GameObject.FindGameObjectWithTag("GameOver");
-        gameOverText.SetActive(false);
+        Debug.Log("Second");
+        Slider a = GameObjectManager.Instance.StaminaBar;
+        GameObjectManager.Instance.CinemachineVirtualCamera.LookAt = gameObject.transform;
+        GameObjectManager.Instance.CinemachineVirtualCamera.Follow = gameObject.transform;
     }
 
     protected override void HandleSprint()
@@ -77,7 +68,7 @@ public class PlayerBehaviour : CharacterBehavior
         {
             moveSpeed = sprintSpeed;
             stamina -= 0.003f;
-            staminaBar.value = stamina;
+            GameObjectManager.Instance.StaminaBar.value = stamina;
 
             if (stamina < 0.005)
             {
@@ -89,7 +80,7 @@ public class PlayerBehaviour : CharacterBehavior
             if (stamina < 1f)
             {
                 stamina += 0.0005f;
-                staminaBar.value = stamina;
+                GameObjectManager.Instance.StaminaBar.value = stamina;
             }
             if (stamina > 0.3f)
             {
@@ -104,9 +95,9 @@ public class PlayerBehaviour : CharacterBehavior
         if (gravityBody.AttractorCount() == 0)
         {
             health -= 0.002f;
-            healthBar.value = health;
+            GameObjectManager.Instance.HealthBar.value = health;
 
-            if (health < 0f) gameOverText.SetActive(true);
+            if (health < 0f) GameObjectManager.Instance.GameOverText.SetActive(true);
         }
     }
 }

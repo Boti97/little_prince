@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyBehaviour : CharacterBehavior
+public class EnemyBehaviour : CharacterBehaviour
 {
     [SerializeField]
     private float pushPower;
@@ -71,7 +71,7 @@ public class EnemyBehaviour : CharacterBehavior
 
     protected override void InitializeCharacterSpecificFields()
     {
-        players.AddRange(GameObject.FindGameObjectsWithTag("Player"));
+        RefreshPlayerList();
     }
 
     private bool IsPlayerOnSamePlanet(GameObject player)

@@ -2,7 +2,7 @@
 using System;
 using UnityEngine;
 
-public abstract class CharacterBehavior : EntityBehaviour<IPlayerState>
+public abstract class CharacterBehaviour : EntityBehaviour<IPlayerState>
 {
     //basic objects
     [HideInInspector]
@@ -53,11 +53,11 @@ public abstract class CharacterBehavior : EntityBehaviour<IPlayerState>
     {
         state.SetTransforms(state.PlayerTransform, transform);
 
-        InitializeCharacterSpecificFields();
-
         animator = GetComponentInChildren<Animator>();
         gravityBody = GetComponent<GravityBody>();
         model = transform.Find("Model");
+
+        InitializeCharacterSpecificFields();
 
         SetAnimation("isWalking", 0);
     }
