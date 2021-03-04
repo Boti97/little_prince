@@ -52,6 +52,6 @@ public class StartSceneManager : GlobalEventListener
 
     private void StartSun()
     {
-        GameObject.Find("Sun").GetComponentInChildren<SunBehaviour>().SelfRotationSpeed = 10;
+        GameObject.Find("Sun").GetComponentInChildren<SunBehaviour>().SelfRotationSpeed = 5;
     }
 }

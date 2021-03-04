@@ -12,6 +12,7 @@ public sealed class GameObjectManager : MonoBehaviour
     private Slider thrustBar;
     private GameObject gameOverText;
     private CinemachineFreeLook cinemachineVirtualCamera;
+    private List<GameObject> planets;
 
     private static readonly object padlock = new object();
     private static GameObjectManager instance = null;
@@ -40,8 +41,9 @@ public sealed class GameObjectManager : MonoBehaviour
     public GameObject GameOverText { get => gameOverText; set => gameOverText = value; }
     public CinemachineFreeLook CinemachineVirtualCamera { get => cinemachineVirtualCamera; set => cinemachineVirtualCamera = value; }
     public Slider ThrustBar { get => thrustBar; set => thrustBar = value; }
+    public List<GameObject> Planets { get => planets; set => planets = value; }
 
-    private void Awake()
+    public void Awake()
     {
         if (instance == null)
         {
@@ -53,7 +55,7 @@ public sealed class GameObjectManager : MonoBehaviour
         }
     }
 
-    private void Start()
+    public void Start()
     {
         StaminaBar = GameObject.FindGameObjectWithTag("StaminaBar").GetComponent<Slider>();
         ThrustBar = GameObject.FindGameObjectWithTag("ThrustBar").GetComponent<Slider>();
@@ -61,7 +63,15 @@ public sealed class GameObjectManager : MonoBehaviour
         GameOverText = GameObject.FindGameObjectWithTag("GameOver");
         CinemachineVirtualCamera = GameObject.FindGameObjectWithTag("ThirdPersonCamera").GetComponent<CinemachineFreeLook>();
 
+        Planets = new List<GameObject>();
+        Planets.AddRange(GameObject.FindGameObjectsWithTag("Planet"));
+
         DeactivateUnnecessaryGameObjects();
+    }
+
+    public void RefreshPlanets()
+    {
+        Planets.AddRange(GameObject.FindGameObjectsWithTag("Planet"));
     }
 
     private void DeactivateUnnecessaryGameObjects()

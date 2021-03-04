@@ -22,7 +22,7 @@ public class PlanetBehaviour : MonoBehaviour
 
     private void Update()
     {
-        transform.RotateAround(orbitCenter.position, axis, rotationSpeed * Time.deltaTime);
+        //transform.RotateAround(orbitCenter.position, axis, rotationSpeed * Time.deltaTime);
         transform.RotateAround(transform.position, selfRotationAxis, selfRotationSpeed * Time.deltaTime);
     }
 }
