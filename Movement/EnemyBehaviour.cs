@@ -76,7 +76,11 @@ public class EnemyBehaviour : CharacterBehaviour
 
     private bool IsPlayerOnSamePlanet(GameObject player)
     {
-        return player.GetComponent<PlayerBehaviour>().planet == planet;
+        if (player != null)
+        {
+            return player.GetComponent<PlayerBehaviour>().planet == planet;
+        }
+        return false;
     }
 
     protected override void HandleSprint()
