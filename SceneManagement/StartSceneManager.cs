@@ -6,6 +6,9 @@ using UnityEngine;
 
 public class StartSceneManager : GlobalEventListener
 {
+    [SerializeField]
+    private GameObject exitJoiningGameButton;
+
     public void Awake()
     {
         //Cursor.lockState = CursorLockMode.Confined;
@@ -29,6 +32,7 @@ public class StartSceneManager : GlobalEventListener
     public void StartClient()
     {
         StartSun();
+        exitJoiningGameButton.SetActive(true);
         BoltLauncher.StartClient();
     }
 
@@ -50,8 +54,20 @@ public class StartSceneManager : GlobalEventListener
         Application.Quit();
     }
 
+    public void ExitJoiningGame()
+    {
+        StopSun();
+        exitJoiningGameButton.SetActive(false);
+        BoltLauncher.Shutdown();
+    }
+
     private void StartSun()
     {
-        GameObject.Find("Sun").GetComponentInChildren<SunBehaviour>().SelfRotationSpeed = 5;
+        GameObject.Find("Sun").GetComponentInChildren<SunBehaviour>().SelfRotationSpeed = 5f;
+    }
+
+    private void StopSun()
+    {
+        GameObject.Find("Sun").GetComponentInChildren<SunBehaviour>().SelfRotationSpeed = 0f;
     }
 }
