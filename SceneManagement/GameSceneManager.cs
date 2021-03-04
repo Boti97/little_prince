@@ -19,6 +19,9 @@ public class GameSceneManager : GlobalEventListener
     private GameObject sunPrefab;
 
     [SerializeField]
+    private GameObject objectivePrefab;
+
+    [SerializeField]
     private float solarSystemRadius;
 
     private void Awake()
@@ -37,6 +40,7 @@ public class GameSceneManager : GlobalEventListener
             {
                 int numberOfEnemies = UnityEngine.Random.Range(1, 4);
                 Vector3 enemySpawnPos;
+                Vector3 objectiveSpawnPos;
                 if (numberOfEnemies > 0)
                 {
                     enemySpawnPos = planet.transform.position;
@@ -54,6 +58,14 @@ public class GameSceneManager : GlobalEventListener
                     enemySpawnPos = planet.transform.position;
                     enemySpawnPos.z += 30;
                     BoltNetwork.Instantiate(leadSoldierPrefab, enemySpawnPos, Quaternion.identity);
+                }
+
+                int probabilityOfObjectives = UnityEngine.Random.Range(1, 101);
+                if (probabilityOfObjectives > 50)
+                {
+                    objectiveSpawnPos = planet.transform.position;
+                    objectiveSpawnPos.z += 30;
+                    BoltNetwork.Instantiate(objectivePrefab, objectiveSpawnPos, Quaternion.identity);
                 }
             });
         }
