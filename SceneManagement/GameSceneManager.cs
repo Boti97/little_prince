@@ -35,48 +35,54 @@ public class GameSceneManager : GlobalEventListener
         if (BoltNetwork.IsServer)
         {
             CreateSolarSystem();
-
-            GameObjectManager.Instance.Planets.ForEach(planet =>
-            {
-                int numberOfEnemies = UnityEngine.Random.Range(1, 4);
-                Vector3 enemySpawnPos;
-                Vector3 objectiveSpawnPos;
-                if (numberOfEnemies > 0)
-                {
-                    enemySpawnPos = planet.transform.position;
-                    enemySpawnPos.x += 30;
-                    BoltNetwork.Instantiate(leadSoldierPrefab, enemySpawnPos, Quaternion.identity);
-                }
-                if (numberOfEnemies > 1)
-                {
-                    enemySpawnPos = planet.transform.position;
-                    enemySpawnPos.y += 30;
-                    BoltNetwork.Instantiate(leadSoldierPrefab, enemySpawnPos, Quaternion.identity);
-                }
-                if (numberOfEnemies > 2)
-                {
-                    enemySpawnPos = planet.transform.position;
-                    enemySpawnPos.z += 30;
-                    BoltNetwork.Instantiate(leadSoldierPrefab, enemySpawnPos, Quaternion.identity);
-                }
-
-                int probabilityOfObjectives = UnityEngine.Random.Range(1, 101);
-                if (probabilityOfObjectives > 50)
-                {
-                    objectiveSpawnPos = planet.transform.position;
-                    objectiveSpawnPos.z += 30;
-                    BoltNetwork.Instantiate(objectivePrefab, objectiveSpawnPos, Quaternion.identity);
-                }
-            });
+            SpawnEnemiesAndObjectives();
         }
 
-        SpawnPlayer();
+        StartCoroutine(SpawnPlayer());
+    }
+
+    private void SpawnEnemiesAndObjectives()
+    {
+        GameObjectManager.Instance.Planets.ForEach(planet =>
+        {
+            int numberOfEnemies = UnityEngine.Random.Range(1, 4);
+            Vector3 enemySpawnPos;
+            Vector3 objectiveSpawnPos;
+            if (numberOfEnemies > 0)
+            {
+                enemySpawnPos = planet.transform.position;
+                enemySpawnPos.x += 30;
+                BoltNetwork.Instantiate(leadSoldierPrefab, enemySpawnPos, Quaternion.identity);
+            }
+            if (numberOfEnemies > 1)
+            {
+                enemySpawnPos = planet.transform.position;
+                enemySpawnPos.y += 30;
+                BoltNetwork.Instantiate(leadSoldierPrefab, enemySpawnPos, Quaternion.identity);
+            }
+            if (numberOfEnemies > 2)
+            {
+                enemySpawnPos = planet.transform.position;
+                enemySpawnPos.z += 30;
+                BoltNetwork.Instantiate(leadSoldierPrefab, enemySpawnPos, Quaternion.identity);
+            }
+
+            int probabilityOfObjectives = UnityEngine.Random.Range(1, 101);
+            if (probabilityOfObjectives > 50)
+            {
+                objectiveSpawnPos = planet.transform.position;
+                objectiveSpawnPos.z += 30;
+                BoltNetwork.Instantiate(objectivePrefab, objectiveSpawnPos, Quaternion.identity);
+            }
+        });
     }
 
     //spawn the player to a random planet
-    private void SpawnPlayer()
+    private IEnumerator SpawnPlayer()
     {
-        int randomPlanetIndex = UnityEngine.Random.Range(0, GameObjectManager.Instance.Planets.Count);
+        yield return StartCoroutine(GameObjectManager.Instance.RefreshPlanetsCoroutine());
+
+        int randomPlanetIndex = UnityEngine.Random.Range(0, GameObjectManager.Instance.Planets.Count - 1);
 
         Vector3 spawnPos = GameObjectManager.Instance.Planets[randomPlanetIndex].transform.position;
         spawnPos.x += 30;

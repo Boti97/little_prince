@@ -69,6 +69,15 @@ public sealed class GameObjectManager : MonoBehaviour
         DeactivateUnnecessaryGameObjects();
     }
 
+    public IEnumerator RefreshPlanetsCoroutine()
+    {
+        while (Planets.Count.Equals(0))
+        {
+            yield return new WaitForSeconds(1f);
+            Planets.AddRange(GameObject.FindGameObjectsWithTag("Planet"));
+        }
+    }
+
     public void RefreshPlanets()
     {
         Planets.AddRange(GameObject.FindGameObjectsWithTag("Planet"));

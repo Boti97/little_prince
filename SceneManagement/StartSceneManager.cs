@@ -3,21 +3,39 @@ using Bolt.Matchmaking;
 using System;
 using UdpKit;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class StartSceneManager : GlobalEventListener
 {
     [SerializeField]
     private GameObject exitJoiningGameButton;
 
+    [SerializeField]
+    private GameObject mainMenuPanel;
+
+    [SerializeField]
+    private GameObject onlineGamePanel;
+
+    [SerializeField]
+    private Button roomPrefab;
+
+    [SerializeField]
+    private GameObject roomListContent;
+
     public void Awake()
     {
         //Cursor.lockState = CursorLockMode.Confined;
         //Cursor.visible = true;
+
+        onlineGamePanel.SetActive(false);
+        mainMenuPanel.SetActive(true);
+        SlowerSun();
     }
 
-    public void StartServer()
+    public void OnClickHost()
     {
-        StartSun();
+        BoltLauncher.Shutdown();
+        FasterSun();
         BoltLauncher.StartServer();
     }
 
@@ -29,9 +47,9 @@ public class StartSceneManager : GlobalEventListener
         }
     }
 
-    public void StartClient()
+    public void OnClickJoin()
     {
-        StartSun();
+        FasterSun();
         exitJoiningGameButton.SetActive(true);
         BoltLauncher.StartClient();
     }
@@ -42,32 +60,52 @@ public class StartSceneManager : GlobalEventListener
         {
             UdpSession photonSession = session.Value as UdpSession;
 
-            if (photonSession.Source == UdpSessionSource.Photon)
-            {
-                BoltMatchmaking.JoinSession(photonSession);
-            }
+            Button room = Instantiate(roomPrefab, roomListContent.transform);
+            room.gameObject.SetActive(true);
+            room.onClick.AddListener(() => OnClickJoinGame(photonSession));
         }
     }
 
-    public void ExitGame()
+    public void OnClickExit()
     {
         Application.Quit();
     }
 
-    public void ExitJoiningGame()
+    public void OnClickExitJoiningGame()
     {
-        StopSun();
+        SlowerSun();
         exitJoiningGameButton.SetActive(false);
         BoltLauncher.Shutdown();
     }
 
-    private void StartSun()
+    public void OnClickOnlineGame()
     {
-        GameObject.Find("Sun").GetComponentInChildren<SunBehaviour>().SelfRotationSpeed = 5f;
+        onlineGamePanel.SetActive(true);
+        mainMenuPanel.SetActive(false);
+        exitJoiningGameButton.SetActive(false);
+        BoltLauncher.StartClient();
     }
 
-    private void StopSun()
+    public void OnClickBack()
     {
-        GameObject.Find("Sun").GetComponentInChildren<SunBehaviour>().SelfRotationSpeed = 0f;
+        onlineGamePanel.SetActive(false);
+        mainMenuPanel.SetActive(true);
+        BoltLauncher.Shutdown();
+        SlowerSun();
+    }
+
+    private void FasterSun()
+    {
+        GameObject.Find("Sun").GetComponentInChildren<SunBehaviour>().SelfRotationSpeed = 10f;
+    }
+
+    private void SlowerSun()
+    {
+        GameObject.Find("Sun").GetComponentInChildren<SunBehaviour>().SelfRotationSpeed = 2f;
+    }
+
+    private void OnClickJoinGame(UdpSession udpSession)
+    {
+        BoltMatchmaking.JoinSession(udpSession);
     }
 }
