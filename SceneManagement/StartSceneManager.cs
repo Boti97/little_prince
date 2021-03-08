@@ -1,14 +1,17 @@
 using Bolt;
 using Bolt.Matchmaking;
+using Bolt.Photon;
 using System;
+using TMPro;
 using UdpKit;
+using UdpKit.Platform.Photon;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class StartSceneManager : GlobalEventListener
 {
-    [SerializeField]
-    private GameObject exitJoiningGameButton;
+    //[SerializeField]
+    //private GameObject exitJoiningGameButton;
 
     [SerializeField]
     private GameObject mainMenuPanel;
@@ -17,7 +20,7 @@ public class StartSceneManager : GlobalEventListener
     private GameObject onlineGamePanel;
 
     [SerializeField]
-    private Button roomPrefab;
+    private GameObject roomPrefab;
 
     [SerializeField]
     private GameObject roomListContent;
@@ -43,26 +46,23 @@ public class StartSceneManager : GlobalEventListener
     {
         if (BoltNetwork.IsServer)
         {
-            BoltMatchmaking.CreateSession(sessionID: "test", sceneToLoad: "Game");
+            BoltNetwork.RegisterTokenClass<PhotonRoomProperties>();
+            PhotonRoomProperties token = new PhotonRoomProperties();
+            token.AddRoomProperty("roomName", GameObject.FindWithTag("NewRoomNameInputField").GetComponent<TMP_InputField>().text);
+            BoltMatchmaking.CreateSession(sessionID: Guid.NewGuid().ToString(), sceneToLoad: "Game", token: token);
         }
-    }
-
-    public void OnClickJoin()
-    {
-        FasterSun();
-        exitJoiningGameButton.SetActive(true);
-        BoltLauncher.StartClient();
     }
 
     public override void SessionListUpdated(Map<Guid, UdpSession> sessionList)
     {
         foreach (var session in sessionList)
         {
-            UdpSession photonSession = session.Value as UdpSession;
+            PhotonSession photonSession = session.Value as PhotonSession;
 
-            Button room = Instantiate(roomPrefab, roomListContent.transform);
+            GameObject room = Instantiate(roomPrefab, roomListContent.transform);
             room.gameObject.SetActive(true);
-            room.onClick.AddListener(() => OnClickJoinGame(photonSession));
+            room.GetComponentInChildren<TextMeshProUGUI>().text = photonSession.Properties["roomName"] as string;
+            room.GetComponentInChildren<Button>().onClick.AddListener(() => OnClickJoinGame(photonSession));
         }
     }
 
@@ -74,7 +74,7 @@ public class StartSceneManager : GlobalEventListener
     public void OnClickExitJoiningGame()
     {
         SlowerSun();
-        exitJoiningGameButton.SetActive(false);
+        //exitJoiningGameButton.SetActive(false);
         BoltLauncher.Shutdown();
     }
 
@@ -82,7 +82,7 @@ public class StartSceneManager : GlobalEventListener
     {
         onlineGamePanel.SetActive(true);
         mainMenuPanel.SetActive(false);
-        exitJoiningGameButton.SetActive(false);
+        //exitJoiningGameButton.SetActive(false);
         BoltLauncher.StartClient();
     }
 
@@ -92,6 +92,19 @@ public class StartSceneManager : GlobalEventListener
         mainMenuPanel.SetActive(true);
         BoltLauncher.Shutdown();
         SlowerSun();
+    }
+
+    public void OnValueChangeForNewRoomNameInputFieldText()
+    {
+        string nameOfRoom = GameObject.FindWithTag("NewRoomNameInputField").GetComponent<TMP_InputField>().text;
+        if (nameOfRoom != null && !nameOfRoom.Equals(""))
+        {
+            GameObject.Find("HostButton").GetComponent<Button>().interactable = true;
+        }
+        else
+        {
+            GameObject.Find("HostButton").GetComponent<Button>().interactable = false;
+        }
     }
 
     private void FasterSun()
@@ -104,8 +117,8 @@ public class StartSceneManager : GlobalEventListener
         GameObject.Find("Sun").GetComponentInChildren<SunBehaviour>().SelfRotationSpeed = 2f;
     }
 
-    private void OnClickJoinGame(UdpSession udpSession)
+    private void OnClickJoinGame(PhotonSession photonSession)
     {
-        BoltMatchmaking.JoinSession(udpSession);
+        BoltMatchmaking.JoinSession(photonSession);
     }
 }
