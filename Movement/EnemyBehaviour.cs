@@ -106,4 +106,10 @@ public class EnemyBehaviour : CharacterBehaviour
         //TODO: implement thrusting
         return;
     }
+
+    protected override void HandleAttack()
+    {
+        //TODO: implement attacking
+        return;
+    }
 }

@@ -23,6 +23,10 @@ public abstract class CharacterBehaviour : EntityBehaviour<IPlayerState>
 
     protected float thrust = 1f;
 
+    //variables for attack
+    [SerializeField]
+    protected float attackPower = 1000f;
+
     //variables for movement
     [SerializeField]
     protected float sprintSpeed = 30f;
@@ -90,6 +94,8 @@ public abstract class CharacterBehaviour : EntityBehaviour<IPlayerState>
         CheckHealth();
 
         HandleThrust();
+
+        HandleAttack();
     }
 
     protected void LateUpdate()
@@ -133,6 +139,8 @@ public abstract class CharacterBehaviour : EntityBehaviour<IPlayerState>
     protected abstract void HandleSprint();
 
     protected abstract void HandleThrust();
+
+    protected abstract void HandleAttack();
 
     protected abstract void InitializeCharacterSpecificFields();
 

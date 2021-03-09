@@ -13,13 +13,10 @@ public sealed class GameObjectManager : MonoBehaviour
     private GameObject gameOverText;
     private CinemachineFreeLook cinemachineVirtualCamera;
     private List<GameObject> planets;
+    private List<GameObject> players;
 
     private static readonly object padlock = new object();
     private static GameObjectManager instance = null;
-
-    private GameObjectManager()
-    {
-    }
 
     public static GameObjectManager Instance
     {
@@ -42,6 +39,7 @@ public sealed class GameObjectManager : MonoBehaviour
     public CinemachineFreeLook CinemachineVirtualCamera { get => cinemachineVirtualCamera; set => cinemachineVirtualCamera = value; }
     public Slider ThrustBar { get => thrustBar; set => thrustBar = value; }
     public List<GameObject> Planets { get => planets; set => planets = value; }
+    public List<GameObject> Players { get => players; set => players = value; }
 
     public void Awake()
     {
@@ -65,6 +63,9 @@ public sealed class GameObjectManager : MonoBehaviour
 
         Planets = new List<GameObject>();
         Planets.AddRange(GameObject.FindGameObjectsWithTag("Planet"));
+
+        Players = new List<GameObject>();
+        Players.AddRange(GameObject.FindGameObjectsWithTag("Player"));
 
         DeactivateUnnecessaryGameObjects();
     }

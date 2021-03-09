@@ -108,7 +108,7 @@ public class PlayerBehaviour : CharacterBehaviour
 
     protected override void HandleThrust()
     {
-        if (Input.GetMouseButtonDown(0) && thrust > 0.33f)
+        if (Input.GetMouseButtonDown(1) && thrust > 0.33f)
         {
             thrust -= 0.33f;
             GameObjectManager.Instance.ThrustBar.value = thrust;
@@ -118,6 +118,21 @@ public class PlayerBehaviour : CharacterBehaviour
         {
             thrust += 0.001f;
             GameObjectManager.Instance.ThrustBar.value = thrust;
+        }
+    }
+
+    protected override void HandleAttack()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            GameObjectManager.Instance.Players.ForEach(player =>
+            {
+                Vector3 distanceFromPlayer = Vector3.ProjectOnPlane((player.transform.position - transform.position), transform.up);
+                if (distanceFromPlayer.magnitude > 1.5f)
+                {
+                    player.gameObject.GetComponent<Rigidbody>().AddForce(transform.forward * attackPower);
+                }
+            });
         }
     }
 }
