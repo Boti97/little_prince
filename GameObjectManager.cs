@@ -7,6 +7,9 @@ using UnityEngine.UI;
 
 public sealed class GameObjectManager : MonoBehaviour
 {
+    [SerializeField]
+    protected GameObject headstonePrefab;
+
     private Slider staminaBar;
     private Slider healthBar;
     private Slider thrustBar;
@@ -82,6 +85,25 @@ public sealed class GameObjectManager : MonoBehaviour
     public void RefreshPlanets()
     {
         Planets.AddRange(GameObject.FindGameObjectsWithTag("Planet"));
+    }
+
+    public void RefreshPlayers()
+    {
+        Players.Clear();
+        Players.AddRange(GameObject.FindGameObjectsWithTag("Player"));
+    }
+
+    public GameObject GetPlayerById(Guid id)
+    {
+        return Players.Find(player => player.GetComponent<PlayerNetworkState>().id == id);
+    }
+
+    public void RemoveDeadPlayer(Guid id)
+    {
+        GameObject deadPlayer = GetPlayerById(id);
+        Instantiate(headstonePrefab, deadPlayer.transform.position, Quaternion.identity);
+        Players.Remove(deadPlayer);
+        Destroy(deadPlayer);
     }
 
     private void DeactivateUnnecessaryGameObjects()

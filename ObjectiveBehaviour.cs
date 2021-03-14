@@ -8,6 +8,7 @@ public class ObjectiveBehaviour : MonoBehaviour
     {
         if (other.gameObject.tag.Equals("Player"))
         {
+            other.gameObject.GetComponent<PlayerNetworkState>().AddHealth(0.2f);
             Destroy(gameObject);
         }
     }

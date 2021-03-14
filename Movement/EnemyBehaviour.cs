@@ -11,23 +11,16 @@ public class EnemyBehaviour : CharacterBehaviour
     private float pushPowerAmplifier;
 
     private int numberOfPushes = 0;
-    private List<GameObject> players = new List<GameObject>();
     private GameObject playerToFollow;
-
-    public void RefreshPlayerList()
-    {
-        players.Clear();
-        players.AddRange(GameObject.FindGameObjectsWithTag("Player"));
-    }
 
     protected override void CalculateMovingDirection()
     {
         //if we did not choose a player to follow yet, or the player we followed jumped to another planet as us, we choose one
-        if ((playerToFollow == null && players.Count > 0) || (!IsPlayerOnSamePlanet(playerToFollow) && players.Count > 1))
+        if ((playerToFollow == null && GameObjectManager.Instance.Players.Count > 0) || (!IsPlayerOnSamePlanet(playerToFollow) && GameObjectManager.Instance.Players.Count > 1))
         {
             //find the players whos are on the same planet
             List<GameObject> followablePlayers = new List<GameObject>();
-            foreach (GameObject player in players)
+            foreach (GameObject player in GameObjectManager.Instance.Players)
             {
                 if (IsPlayerOnSamePlanet(player))
                 {
@@ -71,7 +64,7 @@ public class EnemyBehaviour : CharacterBehaviour
 
     protected override void InitializeCharacterSpecificFields()
     {
-        RefreshPlayerList();
+        return;
     }
 
     private bool IsPlayerOnSamePlanet(GameObject player)
@@ -86,12 +79,6 @@ public class EnemyBehaviour : CharacterBehaviour
     protected override void HandleSprint()
     {
         //TODO: implement enemy sprint
-        return;
-    }
-
-    protected override void CheckHealth()
-    {
-        //TODO: implement enemy health handling
         return;
     }
 

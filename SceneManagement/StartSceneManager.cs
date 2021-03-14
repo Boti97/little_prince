@@ -2,6 +2,7 @@ using Bolt;
 using Bolt.Matchmaking;
 using Bolt.Photon;
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UdpKit;
 using UdpKit.Platform.Photon;
@@ -25,6 +26,9 @@ public class StartSceneManager : GlobalEventListener
     [SerializeField]
     private GameObject roomListContent;
 
+    private bool hostIsCreating = false;
+    private List<GameObject> roomList = new List<GameObject>();
+
     public void Awake()
     {
         //Cursor.lockState = CursorLockMode.Confined;
@@ -37,6 +41,10 @@ public class StartSceneManager : GlobalEventListener
 
     public void OnClickHost()
     {
+        hostIsCreating = true;
+        GameObject.Find("HostButton").GetComponent<Button>().interactable = false;
+        GameObject.FindWithTag("NewRoomNameInputField").GetComponent<TMP_InputField>().interactable = false;
+
         BoltLauncher.Shutdown();
         FasterSun();
         BoltLauncher.StartServer();
@@ -55,14 +63,20 @@ public class StartSceneManager : GlobalEventListener
 
     public override void SessionListUpdated(Map<Guid, UdpSession> sessionList)
     {
+        ClearRooms();
+        int i = 0;
         foreach (var session in sessionList)
         {
             PhotonSession photonSession = session.Value as PhotonSession;
 
             GameObject room = Instantiate(roomPrefab, roomListContent.transform);
             room.gameObject.SetActive(true);
+            room.transform.position = new Vector3(room.transform.position.x, room.transform.position.y - i * 100, room.transform.position.z);
             room.GetComponentInChildren<TextMeshProUGUI>().text = photonSession.Properties["roomName"] as string;
             room.GetComponentInChildren<Button>().onClick.AddListener(() => OnClickJoinGame(photonSession));
+
+            roomList.Add(room);
+            i++;
         }
     }
 
@@ -88,6 +102,7 @@ public class StartSceneManager : GlobalEventListener
 
     public void OnClickBack()
     {
+        GameObject.FindWithTag("NewRoomNameInputField").GetComponent<TMP_InputField>().text = "";
         onlineGamePanel.SetActive(false);
         mainMenuPanel.SetActive(true);
         BoltLauncher.Shutdown();
@@ -97,7 +112,7 @@ public class StartSceneManager : GlobalEventListener
     public void OnValueChangeForNewRoomNameInputFieldText()
     {
         string nameOfRoom = GameObject.FindWithTag("NewRoomNameInputField").GetComponent<TMP_InputField>().text;
-        if (nameOfRoom != null && !nameOfRoom.Equals(""))
+        if (nameOfRoom != null && !nameOfRoom.Equals("") && !hostIsCreating)
         {
             GameObject.Find("HostButton").GetComponent<Button>().interactable = true;
         }
@@ -120,5 +135,15 @@ public class StartSceneManager : GlobalEventListener
     private void OnClickJoinGame(PhotonSession photonSession)
     {
         BoltMatchmaking.JoinSession(photonSession);
+    }
+
+    private void ClearRooms()
+    {
+        foreach (GameObject room in roomList)
+        {
+            Destroy(room);
+        }
+
+        roomList.Clear();
     }
 }

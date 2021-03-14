@@ -7,15 +7,7 @@ public class PlayerBehaviour : CharacterBehaviour
 {
     private Transform localCamera;
 
-    private List<GameObject> players = new List<GameObject>();
-
     private bool hitZeroStamina;
-
-    public void RefreshPlayerList()
-    {
-        players.Clear();
-        players.AddRange(GameObject.FindGameObjectsWithTag("Player"));
-    }
 
     protected override void CalculateMovingDirection()
     {
@@ -54,11 +46,6 @@ public class PlayerBehaviour : CharacterBehaviour
         if (!entity.IsOwner) return;
 
         localCamera = Camera.main.gameObject.transform;
-
-        Debug.Log("Second");
-        Slider a = GameObjectManager.Instance.StaminaBar;
-        GameObjectManager.Instance.CinemachineVirtualCamera.LookAt = gameObject.transform;
-        GameObjectManager.Instance.CinemachineVirtualCamera.Follow = gameObject.transform;
     }
 
     protected override void HandleSprint()
@@ -86,23 +73,6 @@ public class PlayerBehaviour : CharacterBehaviour
                 hitZeroStamina = false;
             }
             moveSpeed = walkSpeed;
-        }
-    }
-
-    protected override void CheckHealth()
-    {
-        if (gravityBody.AttractorCount() == 0)
-        {
-            health -= 0.002f;
-            GameObjectManager.Instance.HealthBar.value = health;
-
-            if (health < 0f)
-            {
-                PlayerDiedEvent playerDiedEvent = PlayerDiedEvent.Create();
-                playerDiedEvent.PlayerPosition = transform.position;
-                playerDiedEvent.Send();
-                Destroy(gameObject);
-            }
         }
     }
 
