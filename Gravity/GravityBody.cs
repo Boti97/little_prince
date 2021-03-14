@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class GravityBody : EntityBehaviour<IPlayerState>
+public class GravityBody : EntityBehaviour<ICharacterState>
 {
     [SerializeField]
     private GameObject initialAttractor;

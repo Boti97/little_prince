@@ -84,7 +84,8 @@ public class GameSceneManager : GlobalEventListener
 
         int randomPlanetIndex = UnityEngine.Random.Range(0, GameObjectManager.Instance.Planets.Count - 1);
 
-        Vector3 spawnPos = GameObjectManager.Instance.Planets[randomPlanetIndex].transform.position;
+        //TODO: change this to random planet, only for debugging purposes
+        Vector3 spawnPos = GameObjectManager.Instance.Planets[0].transform.position;
         spawnPos.x += 30;
 
         BoltNetwork.Instantiate(playerPrefab, spawnPos, Quaternion.identity);

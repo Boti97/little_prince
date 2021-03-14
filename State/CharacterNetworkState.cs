@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerNetworkState : EntityBehaviour<IPlayerState>
+public abstract class CharacterNetworkState : EntityBehaviour<ICharacterState>
 {
     //basic objects
     [HideInInspector]
@@ -24,25 +24,14 @@ public class PlayerNetworkState : EntityBehaviour<IPlayerState>
         if (entity.IsOwner)
         {
             id = Guid.NewGuid();
-            state.SetDynamic("PlayerId", id);
+            state.CharacterId = id;
 
-            GameObjectManager.Instance.CinemachineVirtualCamera.LookAt = gameObject.transform;
-            GameObjectManager.Instance.CinemachineVirtualCamera.Follow = gameObject.transform;
+            gravityBody = GetComponent<GravityBody>();
+
+            AdditionalSetup();
         }
 
-        gravityBody = GetComponent<GravityBody>();
         animator = GetComponentInChildren<Animator>();
-
-        //replaces PlayerJoinedEvent
-        GameObjectManager.Instance.RefreshPlayers();
-    }
-
-    public void AddHealth(float plusHealth)
-    {
-        if (health + plusHealth < 1f)
-            health += plusHealth;
-        else health = 1f;
-        GameObjectManager.Instance.HealthBar.value = health;
     }
 
     private void Update()
@@ -51,9 +40,9 @@ public class PlayerNetworkState : EntityBehaviour<IPlayerState>
         {
             if (!guidSynced)
             {
-                if (!state.PlayerId.Equals(Guid.Empty))
+                if (!state.CharacterId.Equals(Guid.Empty))
                 {
-                    id = state.PlayerId;
+                    id = state.CharacterId;
                     guidSynced = true;
                 }
             }
@@ -62,7 +51,6 @@ public class PlayerNetworkState : EntityBehaviour<IPlayerState>
             GetAnimation("isGrounded");
             GetAnimation("isWalking");
             GetAnimation("isJumped");
-            return;
         }
         else
         {
@@ -70,24 +58,7 @@ public class PlayerNetworkState : EntityBehaviour<IPlayerState>
         }
     }
 
-    private void CheckHealth()
-    {
-        if (gravityBody.AttractorCount() == 0)
-        {
-            health -= 0.002f;
-            GameObjectManager.Instance.HealthBar.value = health;
-
-            if (health < 0f)
-            {
-                GameObjectManager.Instance.CinemachineVirtualCamera.gameObject.SetActive(false);
-                PlayerDiedEvent playerDiedEvent = PlayerDiedEvent.Create();
-                playerDiedEvent.DeadPlayerId = id;
-                playerDiedEvent.Send();
-            }
-        }
-    }
-
-    protected void GetAnimation(string nameOfAnimation)
+    private void GetAnimation(string nameOfAnimation)
     {
         int value = 0;
         switch (nameOfAnimation)
@@ -107,4 +78,8 @@ public class PlayerNetworkState : EntityBehaviour<IPlayerState>
 
         animator.SetInteger(nameOfAnimation, value);
     }
+
+    protected abstract void CheckHealth();
+
+    protected abstract void AdditionalSetup();
 }

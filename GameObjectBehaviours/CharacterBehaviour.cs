@@ -2,7 +2,7 @@
 using System;
 using UnityEngine;
 
-public abstract class CharacterBehaviour : EntityBehaviour<IPlayerState>
+public abstract class CharacterBehaviour : EntityBehaviour<ICharacterState>
 {
     //basic objects
     [HideInInspector]
@@ -58,7 +58,7 @@ public abstract class CharacterBehaviour : EntityBehaviour<IPlayerState>
 
     public override void Attached()
     {
-        state.SetTransforms(state.PlayerTransform, transform);
+        state.SetTransforms(state.CharacterTransform, transform);
 
         animator = GetComponentInChildren<Animator>();
         gravityBody = GetComponent<GravityBody>();

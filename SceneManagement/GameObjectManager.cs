@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public sealed class GameObjectManager : MonoBehaviour
 {
     [SerializeField]
-    protected GameObject headstonePrefab;
+    private GameObject headstonePrefab;
 
     private Slider staminaBar;
     private Slider healthBar;

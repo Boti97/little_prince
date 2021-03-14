@@ -2,7 +2,7 @@ using UnityEngine;
 using Bolt;
 using UnityEngine.SceneManagement;
 
-public class MenuBehaviour : GlobalEventListener
+public class GameMenuManager : GlobalEventListener
 {
     [SerializeField]
     private GameObject menu;
