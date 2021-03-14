@@ -43,6 +43,12 @@ public class GameSceneManager : GlobalEventListener
 
     private void SpawnEnemiesAndObjectives()
     {
+        //Vector3 enemySpawnPos;
+
+        //enemySpawnPos = GameObjectManager.Instance.Planets[0].transform.position;
+        //enemySpawnPos.x += 30;
+        //BoltNetwork.Instantiate(leadSoldierPrefab, enemySpawnPos, Quaternion.identity);
+
         GameObjectManager.Instance.Planets.ForEach(planet =>
         {
             int numberOfEnemies = UnityEngine.Random.Range(1, 4);

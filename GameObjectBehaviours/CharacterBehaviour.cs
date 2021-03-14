@@ -1,5 +1,6 @@
 ﻿using Bolt;
 using System;
+using System.Collections;
 using UnityEngine;
 
 public abstract class CharacterBehaviour : EntityBehaviour<ICharacterState>
@@ -60,7 +61,10 @@ public abstract class CharacterBehaviour : EntityBehaviour<ICharacterState>
     {
         state.SetTransforms(state.CharacterTransform, transform);
 
+        if (!entity.IsOwner) return;
+
         animator = GetComponentInChildren<Animator>();
+
         gravityBody = GetComponent<GravityBody>();
         model = transform.Find("Model");
 
@@ -71,9 +75,13 @@ public abstract class CharacterBehaviour : EntityBehaviour<ICharacterState>
 
     protected void Update()
     {
-        CheckOnGround();
+        CheckPlanet();
+
+        if (!entity.IsOwner) return;
 
         CalculateMovingDirection();
+
+        CheckOnGround();
 
         HandleJump();
 
@@ -160,7 +168,14 @@ public abstract class CharacterBehaviour : EntityBehaviour<ICharacterState>
                 SetAnimation("isGrounded", 1);
                 SetAnimation("isJumped", 0);
             }
+        }
+    }
 
+    private void CheckPlanet()
+    {
+        Ray ray = new Ray(transform.position, -transform.up);
+        if (Physics.Raycast(ray, out RaycastHit hit, 2 + .1f, groundedMask))
+        {
             if (hit.collider.gameObject.GetComponentInParent<GravityAttractor>() != null
                 && hit.collider.gameObject.GetComponentInParent<GravityAttractor>().guid != planet)
             {

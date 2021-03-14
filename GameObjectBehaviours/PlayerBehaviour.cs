@@ -1,4 +1,5 @@
 ﻿using Cinemachine;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -43,8 +44,6 @@ public class PlayerBehaviour : CharacterBehaviour
 
     protected override void InitializeCharacterSpecificFields()
     {
-        if (!entity.IsOwner) return;
-
         localCamera = Camera.main.gameObject.transform;
     }
 
@@ -97,10 +96,16 @@ public class PlayerBehaviour : CharacterBehaviour
         {
             GameObjectManager.Instance.Players.ForEach(player =>
             {
-                Vector3 distanceFromPlayer = Vector3.ProjectOnPlane((player.transform.position - transform.position), transform.up);
-                if (distanceFromPlayer.magnitude > 1.5f)
+                if (!player.GetComponent<PlayerNetworkState>().entity.IsOwner)
                 {
-                    player.gameObject.GetComponent<Rigidbody>().AddForce(transform.forward * attackPower);
+                    Vector3 distanceFromPlayer = Vector3.ProjectOnPlane((player.transform.position - transform.position), transform.up);
+                    if (distanceFromPlayer.magnitude < 1.5f)
+                    {
+                        EventManager.Instance.SendCharacterPushedEvent(
+                            transform.Find("Model").forward,
+                            player.GetComponent<PlayerNetworkState>().id,
+                            attackPower);
+                    }
                 }
             });
         }

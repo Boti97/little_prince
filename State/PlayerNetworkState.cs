@@ -16,8 +16,11 @@ public class PlayerNetworkState : CharacterNetworkState
 
     protected override void AdditionalSetup()
     {
-        GameObjectManager.Instance.CinemachineVirtualCamera.LookAt = gameObject.transform;
-        GameObjectManager.Instance.CinemachineVirtualCamera.Follow = gameObject.transform;
+        if (entity.IsOwner)
+        {
+            GameObjectManager.Instance.CinemachineVirtualCamera.LookAt = gameObject.transform;
+            GameObjectManager.Instance.CinemachineVirtualCamera.Follow = gameObject.transform;
+        }
 
         //replaces PlayerJoinedEvent
         GameObjectManager.Instance.RefreshPlayers();
@@ -33,9 +36,7 @@ public class PlayerNetworkState : CharacterNetworkState
             if (health < 0f)
             {
                 GameObjectManager.Instance.CinemachineVirtualCamera.gameObject.SetActive(false);
-                PlayerDiedEvent playerDiedEvent = PlayerDiedEvent.Create();
-                playerDiedEvent.DeadPlayerId = id;
-                playerDiedEvent.Send();
+                EventManager.Instance.SendPlayerDiedEvent(id);
             }
         }
     }

@@ -27,9 +27,9 @@ public abstract class CharacterNetworkState : EntityBehaviour<ICharacterState>
             state.CharacterId = id;
 
             gravityBody = GetComponent<GravityBody>();
-
-            AdditionalSetup();
         }
+
+        AdditionalSetup();
 
         animator = GetComponentInChildren<Animator>();
     }

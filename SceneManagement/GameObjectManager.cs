@@ -93,12 +93,7 @@ public sealed class GameObjectManager : MonoBehaviour
         Players.AddRange(GameObject.FindGameObjectsWithTag("Player"));
     }
 
-    public GameObject GetPlayerById(Guid id)
-    {
-        return Players.Find(player => player.GetComponent<PlayerNetworkState>().id == id);
-    }
-
-    public void RemoveDeadPlayer(Guid id)
+    public void RemovePlayer(Guid id)
     {
         GameObject deadPlayer = GetPlayerById(id);
         Instantiate(headstonePrefab, deadPlayer.transform.position, Quaternion.identity);
@@ -106,8 +101,23 @@ public sealed class GameObjectManager : MonoBehaviour
         Destroy(deadPlayer);
     }
 
+    public bool IsPlayerOwned(Guid id)
+    {
+        return GetOwnedPlayerId() == id;
+    }
+
+    public GameObject GetPlayerById(Guid id)
+    {
+        return Players.Find(player => player.GetComponent<PlayerNetworkState>().id == id);
+    }
+
     private void DeactivateUnnecessaryGameObjects()
     {
         GameOverText.SetActive(false);
+    }
+
+    private Guid GetOwnedPlayerId()
+    {
+        return Players.Find(player => player.GetComponent<PlayerNetworkState>().entity.IsOwner).GetComponent<PlayerNetworkState>().id;
     }
 }

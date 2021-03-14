@@ -38,28 +38,6 @@ public class EnemyBehaviour : CharacterBehaviour
                 playerToFollow = followablePlayers[0];
             }
         }
-
-        //if we have a player to follow, who's on the same planet as us, follow it
-        if (playerToFollow != null && IsPlayerOnSamePlanet(playerToFollow))
-        {
-            Vector3 distanceFromPlayer = Vector3.ProjectOnPlane((playerToFollow.transform.position - transform.position), transform.up);
-            if (distanceFromPlayer.magnitude > 1.5f)
-            {
-                finalDir = Vector3.ProjectOnPlane((playerToFollow.transform.position - transform.position).normalized, transform.up).normalized;
-                moveDir = Vector3.forward;
-            }
-            //if we close enough we push them into space
-            else
-            {
-                playerToFollow.GetComponent<Rigidbody>().AddForce(transform.Find("Model").forward * (pushPower + (numberOfPushes * pushPowerAmplifier)));
-                numberOfPushes++;
-                moveDir = Vector3.zero;
-            }
-        }
-        else
-        {
-            moveDir = Vector3.zero;
-        }
     }
 
     protected override void InitializeCharacterSpecificFields()
@@ -79,6 +57,7 @@ public class EnemyBehaviour : CharacterBehaviour
     protected override void HandleSprint()
     {
         //TODO: implement enemy sprint
+        moveSpeed = walkSpeed;
         return;
     }
 
@@ -96,7 +75,30 @@ public class EnemyBehaviour : CharacterBehaviour
 
     protected override void HandleAttack()
     {
-        //TODO: implement attacking
-        return;
+        //if we have a player to follow, who's on the same planet as us, follow it
+        if (playerToFollow != null && IsPlayerOnSamePlanet(playerToFollow))
+        {
+            Vector3 distanceFromPlayer = Vector3.ProjectOnPlane(playerToFollow.transform.position - transform.position, transform.up);
+            if (distanceFromPlayer.magnitude > 1.5f)
+            {
+                finalDir = Vector3.ProjectOnPlane((playerToFollow.transform.position - transform.position).normalized, transform.up).normalized;
+                moveDir = Vector3.forward;
+            }
+            //if we close enough we push them into space
+            else
+            {
+                EventManager.Instance.SendCharacterPushedEvent(
+                        transform.Find("Model").forward,
+                        playerToFollow.GetComponent<PlayerNetworkState>().id,
+                        pushPower + (numberOfPushes * pushPowerAmplifier));
+
+                numberOfPushes++;
+                moveDir = Vector3.zero;
+            }
+        }
+        else
+        {
+            moveDir = Vector3.zero;
+        }
     }
 }
