@@ -111,13 +111,13 @@ public sealed class GameObjectManager : MonoBehaviour
         return Players.Find(player => player.GetComponent<PlayerNetworkState>().id == id);
     }
 
+    public Guid GetOwnedPlayerId()
+    {
+        return Players.Find(player => player.GetComponent<PlayerNetworkState>().entity.IsOwner).GetComponent<PlayerNetworkState>().id;
+    }
+
     private void DeactivateUnnecessaryGameObjects()
     {
         GameOverText.SetActive(false);
-    }
-
-    private Guid GetOwnedPlayerId()
-    {
-        return Players.Find(player => player.GetComponent<PlayerNetworkState>().entity.IsOwner).GetComponent<PlayerNetworkState>().id;
     }
 }

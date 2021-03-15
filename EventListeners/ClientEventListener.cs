@@ -9,6 +9,7 @@ public class ClientEventListener : GlobalEventListener
 
     public override void OnEvent(GameOverEvent evnt)
     {
+        GameObjectManager.Instance.CinemachineVirtualCamera.gameObject.SetActive(false);
         GameObjectManager.Instance.GameOverText.SetActive(true);
     }
 
