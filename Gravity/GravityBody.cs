@@ -21,7 +21,7 @@ public class GravityBody : EntityBehaviour<ICharacterState>
         if (initialAttractor != null)
         {
             GravityAttractor gravityAttractor = initialAttractor.GetComponent<GravityAttractor>();
-            gravityAttractorDictionary.Add(gravityAttractor.guid, new KeyValuePair<GravityAttractor, float>(gravityAttractor, 0f));
+            gravityAttractorDictionary.Add(gravityAttractor.planetId, new KeyValuePair<GravityAttractor, float>(gravityAttractor, 0f));
         }
         GetComponent<Rigidbody>().useGravity = false;
         GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
@@ -56,15 +56,15 @@ public class GravityBody : EntityBehaviour<ICharacterState>
         if (other.gameObject.layer.Equals(LayerMask.NameToLayer("GravityField")))
         {
             GravityAttractor gravityAttractor = other.gameObject.GetComponentInParent<GravityAttractor>();
-            if (gravityAttractorDictionary.ContainsKey(gravityAttractor.guid))
+            if (gravityAttractorDictionary.ContainsKey(gravityAttractor.planetId))
             {
                 //if it's already in the list we only need to set the time to 0
-                gravityAttractorDictionary[gravityAttractor.guid] = new KeyValuePair<GravityAttractor, float>(gravityAttractor, 0f);
+                gravityAttractorDictionary[gravityAttractor.planetId] = new KeyValuePair<GravityAttractor, float>(gravityAttractor, 0f);
             }
             else
             {
                 //if it's not already in the list we  need to add a new entry
-                gravityAttractorDictionary.Add(gravityAttractor.guid, new KeyValuePair<GravityAttractor, float>(gravityAttractor, 0f));
+                gravityAttractorDictionary.Add(gravityAttractor.planetId, new KeyValuePair<GravityAttractor, float>(gravityAttractor, 0f));
             }
         }
     }
@@ -77,7 +77,7 @@ public class GravityBody : EntityBehaviour<ICharacterState>
 
         if (other.gameObject.layer.Equals(LayerMask.NameToLayer("GravityField")))
         {
-            gravityAttractorDictionary.Remove(gravityAttractor.guid);
+            gravityAttractorDictionary.Remove(gravityAttractor.planetId);
         }
     }
 

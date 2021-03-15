@@ -7,7 +7,7 @@ public abstract class CharacterBehaviour : EntityBehaviour<ICharacterState>
 {
     //basic objects
     [HideInInspector]
-    public Guid planet;
+    public Guid planetId;
 
     protected Animator animator;
 
@@ -53,8 +53,10 @@ public abstract class CharacterBehaviour : EntityBehaviour<ICharacterState>
 
     protected int numberOfJumps = 0;
 
+    //state indicators
     protected bool isJumpEnabled;
-    protected bool grounded;
+
+    protected bool isGrounded;
     protected bool isJumping;
 
     public override void Attached()
@@ -101,9 +103,9 @@ public abstract class CharacterBehaviour : EntityBehaviour<ICharacterState>
          * - user said so and
          * - there are at least one attractor
          */
-        if (grounded && moveDir.magnitude >= .1f && gravityBody.AttractorCount() > 0)
+        if (isGrounded && moveDir.magnitude >= .1f && gravityBody.AttractorCount() > 0)
         {
-            if (grounded)
+            if (isGrounded)
             {
                 SetAnimation("isWalking", 1);
             }
@@ -121,7 +123,7 @@ public abstract class CharacterBehaviour : EntityBehaviour<ICharacterState>
             isMoving = false;
         }
 
-        state.SetDynamic("ModelRotation", transform.Find("Model").rotation);
+        state.ModelRotation = model.rotation;
     }
 
     protected abstract void CalculateMovingDirection();
@@ -162,7 +164,7 @@ public abstract class CharacterBehaviour : EntityBehaviour<ICharacterState>
         {
             if (!isJumping && !isMoving)
             {
-                grounded = true;
+                isGrounded = true;
                 isJumpEnabled = true;
 
                 SetAnimation("isGrounded", 1);
@@ -177,9 +179,9 @@ public abstract class CharacterBehaviour : EntityBehaviour<ICharacterState>
         if (Physics.Raycast(ray, out RaycastHit hit, 2 + .1f, groundedMask))
         {
             if (hit.collider.gameObject.GetComponentInParent<GravityAttractor>() != null
-                && hit.collider.gameObject.GetComponentInParent<GravityAttractor>().guid != planet)
+                && hit.collider.gameObject.GetComponentInParent<GravityAttractor>().planetId != planetId)
             {
-                planet = hit.collider.gameObject.GetComponentInParent<GravityAttractor>().guid;
+                planetId = hit.collider.gameObject.GetComponentInParent<GravityAttractor>().planetId;
             }
         }
     }

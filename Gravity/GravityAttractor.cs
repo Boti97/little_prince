@@ -4,7 +4,7 @@ using UnityEngine;
 public abstract class GravityAttractor : MonoBehaviour
 {
     [HideInInspector]
-    public Guid guid;
+    public Guid planetId;
 
     [SerializeField]
     protected float gravityPower = -5000f;
@@ -22,9 +22,9 @@ public abstract class GravityAttractor : MonoBehaviour
 
     private void Awake()
     {
-        if (guid != null)
+        if (planetId != null)
         {
-            guid = Guid.NewGuid();
+            planetId = Guid.NewGuid();
         }
     }
 

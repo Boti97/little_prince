@@ -23,14 +23,14 @@ public class PlayerBehaviour : CharacterBehaviour
 
     protected override void HandleJump()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && (grounded || isJumpEnabled))
+        if (Input.GetKeyDown(KeyCode.Space) && (isGrounded || isJumpEnabled))
         {
             SetAnimation("isJumped", 1);
             SetAnimation("isGrounded", 0);
 
             GetComponent<Rigidbody>().AddForce(transform.up * jumpForce);
             numberOfJumps++;
-            grounded = false;
+            isGrounded = false;
             isJumping = true;
         }
         else { isJumping = false; }

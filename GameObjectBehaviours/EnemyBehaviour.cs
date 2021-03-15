@@ -45,15 +45,6 @@ public class EnemyBehaviour : CharacterBehaviour
         return;
     }
 
-    private bool IsPlayerOnSamePlanet(GameObject player)
-    {
-        if (player != null)
-        {
-            return player.GetComponent<PlayerBehaviour>().planet == planet;
-        }
-        return false;
-    }
-
     protected override void HandleSprint()
     {
         //TODO: implement enemy sprint
@@ -100,5 +91,14 @@ public class EnemyBehaviour : CharacterBehaviour
         {
             moveDir = Vector3.zero;
         }
+    }
+
+    private bool IsPlayerOnSamePlanet(GameObject player)
+    {
+        if (player != null)
+        {
+            return player.GetComponent<PlayerBehaviour>().planetId == planetId;
+        }
+        return false;
     }
 }

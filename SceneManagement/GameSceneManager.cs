@@ -24,6 +24,9 @@ public class GameSceneManager : GlobalEventListener
     [SerializeField]
     private float solarSystemRadius;
 
+    [SerializeField]
+    private float planetToPlanetDistance;
+
     private void Awake()
     {
         //Cursor.lockState = CursorLockMode.Confined;
@@ -81,17 +84,22 @@ public class GameSceneManager : GlobalEventListener
                 BoltNetwork.Instantiate(objectivePrefab, objectiveSpawnPos, Quaternion.identity);
             }
         });
+
+        GameObjectManager.Instance.RefreshEnemies();
     }
 
     //spawn the player to a random planet
     private IEnumerator SpawnPlayer()
     {
         yield return StartCoroutine(GameObjectManager.Instance.RefreshPlanetsCoroutine());
-
-        int randomPlanetIndex = UnityEngine.Random.Range(0, GameObjectManager.Instance.Planets.Count - 1);
+        yield return StartCoroutine(GameObjectManager.Instance.RefreshEnemiesCoroutine());
 
         //TODO: change this to random planet, only for debugging purposes
-        Vector3 spawnPos = GameObjectManager.Instance.Planets[0].transform.position;
+        //int randomPlanetIndex = UnityEngine.Random.Range(0, GameObjectManager.Instance.Planets.Count - 1);
+        int randomPlanetIndex = 0;
+        GameObjectManager.Instance.RemoveEnemiesOnPlanet(GameObjectManager.Instance.Planets[randomPlanetIndex].GetComponentInChildren<PlanetGravityAttractor>().planetId);
+
+        Vector3 spawnPos = GameObjectManager.Instance.Planets[randomPlanetIndex].transform.position;
         spawnPos.x += 30;
 
         BoltNetwork.Instantiate(playerPrefab, spawnPos, Quaternion.identity);
@@ -101,7 +109,7 @@ public class GameSceneManager : GlobalEventListener
     {
         BoltNetwork.Instantiate(sunPrefab);
 
-        foreach (var planetPosition in getPlanetPositions())
+        foreach (var planetPosition in GetPlanetPositions())
         {
             BoltNetwork.Instantiate(planetPrefab, planetPosition, UnityEngine.Random.rotation);
         }
@@ -109,16 +117,13 @@ public class GameSceneManager : GlobalEventListener
         GameObjectManager.Instance.RefreshPlanets();
     }
 
-    private List<Vector3> getPlanetPositions()
+    private List<Vector3> GetPlanetPositions()
     {
         List<Vector3> planetPositions = new List<Vector3>();
         planetPositions.Add(new Vector3(solarSystemRadius, 0, 0));
 
         bool algorithmFinished = false;
         Vector3 lastPlanetPosition = Vector3.negativeInfinity;
-
-        //emergency limit
-        int counter = 0;
 
         while (!algorithmFinished)
         {
@@ -132,7 +137,7 @@ public class GameSceneManager : GlobalEventListener
                     sunPrefab.transform.position,
                     solarSystemRadius,
                     new Vector3(solarSystemRadius, 0, 0),
-                    105)[0]);
+                    planetToPlanetDistance)[0]);
             }
             else
             {
@@ -140,7 +145,7 @@ public class GameSceneManager : GlobalEventListener
                     sunPrefab.transform.position,
                     solarSystemRadius,
                     planetPositions[planetPositions.Count - 1],
-                    105));
+                    planetToPlanetDistance));
 
                 if ((lastPlanetPosition - newPlanetPositions[0]).sqrMagnitude < 0.01f)
                 {
@@ -168,11 +173,6 @@ public class GameSceneManager : GlobalEventListener
             {
                 algorithmFinished = CheckIfAlgorithmFinished(lastPlanetPosition, planetPositions[0]);
             }
-            if (counter > 100)
-            {
-                algorithmFinished = true;
-            }
-            counter++;
         }
         planetPositions.RemoveAt(planetPositions.Count - 1);
 

@@ -19,7 +19,10 @@ public class GameMenuManager : GlobalEventListener
 
     public void OnExitClick()
     {
-        EventManager.Instance.SendPlayerDiedEvent(GameObjectManager.Instance.GetOwnedPlayerId());
+        if (BoltNetwork.IsRunning && !GameObjectManager.Instance.IsGameOver() && GameObjectManager.Instance.IsOwnedPlayerAlive())
+        {
+            EventManager.Instance.SendPlayerDiedEvent(GameObjectManager.Instance.GetOwnedPlayerId());
+        }
         SceneManager.LoadScene("Start");
         BoltLauncher.Shutdown();
     }

@@ -17,6 +17,7 @@ public sealed class GameObjectManager : MonoBehaviour
     private CinemachineFreeLook cinemachineVirtualCamera;
     private List<GameObject> planets;
     private List<GameObject> players;
+    private List<GameObject> enemies;
 
     private static readonly object padlock = new object();
     private static GameObjectManager instance = null;
@@ -43,6 +44,7 @@ public sealed class GameObjectManager : MonoBehaviour
     public Slider ThrustBar { get => thrustBar; set => thrustBar = value; }
     public List<GameObject> Planets { get => planets; set => planets = value; }
     public List<GameObject> Players { get => players; set => players = value; }
+    public List<GameObject> Enemies { get => enemies; set => enemies = value; }
 
     public void Awake()
     {
@@ -70,6 +72,9 @@ public sealed class GameObjectManager : MonoBehaviour
         Players = new List<GameObject>();
         Players.AddRange(GameObject.FindGameObjectsWithTag("Player"));
 
+        Enemies = new List<GameObject>();
+        Enemies.AddRange(GameObject.FindGameObjectsWithTag("Enemy"));
+
         DeactivateUnnecessaryGameObjects();
     }
 
@@ -82,9 +87,23 @@ public sealed class GameObjectManager : MonoBehaviour
         }
     }
 
+    public IEnumerator RefreshEnemiesCoroutine()
+    {
+        while (Enemies.Count.Equals(0))
+        {
+            yield return new WaitForSeconds(1f);
+            Enemies.AddRange(GameObject.FindGameObjectsWithTag("Enemy"));
+        }
+    }
+
     public void RefreshPlanets()
     {
         Planets.AddRange(GameObject.FindGameObjectsWithTag("Planet"));
+    }
+
+    public void RefreshEnemies()
+    {
+        Enemies.AddRange(GameObject.FindGameObjectsWithTag("Enemy"));
     }
 
     public void RefreshPlayers()
@@ -114,6 +133,35 @@ public sealed class GameObjectManager : MonoBehaviour
     public Guid GetOwnedPlayerId()
     {
         return Players.Find(player => player.GetComponent<PlayerNetworkState>().entity.IsOwner).GetComponent<PlayerNetworkState>().id;
+    }
+
+    public bool IsOwnedPlayerAlive()
+    {
+        return Players.Find(player => player.GetComponent<PlayerNetworkState>().entity.IsOwner) != null;
+    }
+
+    public bool IsGameOver()
+    {
+        return GameOverText.activeSelf;
+    }
+
+    public List<GameObject> FindPlayersOnPlanet(Guid planetId)
+    {
+        return Players.FindAll(player => player.GetComponent<PlayerBehaviour>().planetId == planetId);
+    }
+
+    public List<GameObject> FindEnemiesOnPlanet(Guid planetId)
+    {
+        return Enemies.FindAll(enemy => enemy.GetComponent<EnemyBehaviour>().planetId == planetId);
+    }
+
+    public void RemoveEnemiesOnPlanet(Guid planetId)
+    {
+        FindEnemiesOnPlanet(planetId).ForEach(enemy =>
+        {
+            Enemies.Remove(enemy);
+            Destroy(enemy);
+        });
     }
 
     private void DeactivateUnnecessaryGameObjects()
