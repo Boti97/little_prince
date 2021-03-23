@@ -15,6 +15,10 @@ public abstract class CharacterBehaviour : EntityBehaviour<ICharacterState>
 
     protected GravityBody gravityBody;
 
+    protected Transform parent;
+    //private Vector3 previousParentPos;
+    //private Vector3 deltaParentPos;
+
     //variables for thrust
     [SerializeField]
     protected float thrustPower = 50f;
@@ -61,8 +65,6 @@ public abstract class CharacterBehaviour : EntityBehaviour<ICharacterState>
 
     public override void Attached()
     {
-        state.SetTransforms(state.CharacterTransform, transform);
-
         if (!entity.IsOwner) return;
 
         animator = GetComponentInChildren<Animator>();
@@ -73,6 +75,18 @@ public abstract class CharacterBehaviour : EntityBehaviour<ICharacterState>
         InitializeCharacterSpecificFields();
 
         SetAnimation("isWalking", 0);
+    }
+
+    public Guid GetParentId()
+    {
+        if (transform.parent == null)
+        {
+            return Guid.Empty;
+        }
+        else
+        {
+            return parent.GetComponentInParent<IObjectState>().GetGuid();
+        }
     }
 
     protected void Update()
@@ -110,6 +124,10 @@ public abstract class CharacterBehaviour : EntityBehaviour<ICharacterState>
                 SetAnimation("isWalking", 1);
             }
 
+            //deltaParentPos = parent.position - previousParentPos;
+            //previousParentPos = parent.position;
+            //transform.parent = null;
+
             Quaternion targetRotation = Quaternion.LookRotation(finalDir, transform.up);
             model.rotation = Quaternion.Slerp(model.rotation, targetRotation, turnSmoothTime * BoltNetwork.FrameDeltaTime);
             GetComponent<Rigidbody>().MovePosition(GetComponent<Rigidbody>().position + (finalDir * moveSpeed) * BoltNetwork.FrameDeltaTime);
@@ -122,8 +140,6 @@ public abstract class CharacterBehaviour : EntityBehaviour<ICharacterState>
 
             isMoving = false;
         }
-
-        state.ModelRotation = model.rotation;
     }
 
     protected abstract void CalculateMovingDirection();
@@ -169,6 +185,9 @@ public abstract class CharacterBehaviour : EntityBehaviour<ICharacterState>
 
                 SetAnimation("isGrounded", 1);
                 SetAnimation("isJumped", 0);
+
+                //parent = hit.transform;
+                //transform.parent = parent;
             }
         }
     }
@@ -178,10 +197,10 @@ public abstract class CharacterBehaviour : EntityBehaviour<ICharacterState>
         Ray ray = new Ray(transform.position, -transform.up);
         if (Physics.Raycast(ray, out RaycastHit hit, 2 + .1f, groundedMask))
         {
-            if (hit.collider.gameObject.GetComponentInParent<GravityAttractor>() != null
-                && hit.collider.gameObject.GetComponentInParent<GravityAttractor>().planetId != planetId)
+            if (hit.collider.gameObject.GetComponentInParent<IObjectState>() != null
+                && hit.collider.gameObject.GetComponentInParent<IObjectState>().GetGuid() != planetId)
             {
-                planetId = hit.collider.gameObject.GetComponentInParent<GravityAttractor>().planetId;
+                planetId = hit.collider.gameObject.GetComponentInParent<IObjectState>().GetGuid();
             }
         }
     }

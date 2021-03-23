@@ -1,8 +1,9 @@
-﻿using System.Collections;
+﻿using Bolt;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlanetBehaviour : MonoBehaviour
+public class PlanetBehaviour : EntityBehaviour<IPlanetState>
 {
     [SerializeField]
     private Transform orbitCenter;
@@ -14,15 +15,21 @@ public class PlanetBehaviour : MonoBehaviour
     private float selfRotationSpeed = 0f;
     private Vector3 selfRotationAxis = Vector3.up;
 
-    private void Start()
+    public override void Attached()
     {
+        if (!entity.IsOwner) return;
         selfRotationSpeed = Random.Range(0.0f, selfRotationSpeed);
         selfRotationAxis = VectorExtensions.RandomAxis();
+        orbitCenter = GameObjectManager.Instance.Sun.transform;
     }
 
     private void Update()
     {
-        //transform.RotateAround(orbitCenter.position, axis, rotationSpeed * Time.deltaTime);
+        if (entity != null && !entity.IsOwner) return;
+        if (orbitCenter != null)
+        {
+            transform.RotateAround(orbitCenter.position, axis, rotationSpeed * Time.deltaTime);
+        }
         transform.RotateAround(transform.position, selfRotationAxis, selfRotationSpeed * Time.deltaTime);
     }
 }

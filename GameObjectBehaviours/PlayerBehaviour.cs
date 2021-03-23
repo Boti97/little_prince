@@ -28,6 +28,8 @@ public class PlayerBehaviour : CharacterBehaviour
             SetAnimation("isJumped", 1);
             SetAnimation("isGrounded", 0);
 
+            //transform.parent = null;
+
             GetComponent<Rigidbody>().AddForce(transform.up * jumpForce);
             numberOfJumps++;
             isGrounded = false;
@@ -98,12 +100,11 @@ public class PlayerBehaviour : CharacterBehaviour
             {
                 if (!player.GetComponent<PlayerNetworkState>().entity.IsOwner)
                 {
-                    Vector3 distanceFromPlayer = Vector3.ProjectOnPlane((player.transform.position - transform.position), transform.up);
-                    if (distanceFromPlayer.magnitude < 1.5f)
+                    if (Vector3.Distance(player.transform.position, transform.position) < 1.5f)
                     {
                         EventManager.Instance.SendCharacterPushedEvent(
                             transform.Find("Model").forward,
-                            player.GetComponent<PlayerNetworkState>().id,
+                            player.GetComponent<PlayerNetworkState>().GetGuid(),
                             attackPower);
                     }
                 }

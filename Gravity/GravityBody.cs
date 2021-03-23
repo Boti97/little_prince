@@ -17,12 +17,6 @@ public class GravityBody : EntityBehaviour<ICharacterState>
         if (!entity.IsOwner) return;
 
         gravityAttractorDictionary = new Dictionary<Guid, KeyValuePair<GravityAttractor, float>>();
-        //it is not mandatory to add an initial attractor
-        if (initialAttractor != null)
-        {
-            GravityAttractor gravityAttractor = initialAttractor.GetComponent<GravityAttractor>();
-            gravityAttractorDictionary.Add(gravityAttractor.planetId, new KeyValuePair<GravityAttractor, float>(gravityAttractor, 0f));
-        }
         GetComponent<Rigidbody>().useGravity = false;
         GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
     }
@@ -34,7 +28,7 @@ public class GravityBody : EntityBehaviour<ICharacterState>
         //CheckGravityAttractors();
         if (gravityAttractorDictionary.Count != 0)
         {
-            gravityAttractorDictionary.Select(gA => gA.Value.Key).ToList().ForEach(x => x.Attract(transform.gameObject));
+            gravityAttractorDictionary.Select(entry => entry.Value.Key).ToList().ForEach(gravityAttractor => gravityAttractor.Attract(transform.gameObject));
         }
         else
         {
@@ -55,16 +49,17 @@ public class GravityBody : EntityBehaviour<ICharacterState>
 
         if (other.gameObject.layer.Equals(LayerMask.NameToLayer("GravityField")))
         {
+            IObjectState objectState = other.gameObject.GetComponentInParent<IObjectState>();
             GravityAttractor gravityAttractor = other.gameObject.GetComponentInParent<GravityAttractor>();
-            if (gravityAttractorDictionary.ContainsKey(gravityAttractor.planetId))
+            if (gravityAttractorDictionary.ContainsKey(objectState.GetGuid()))
             {
                 //if it's already in the list we only need to set the time to 0
-                gravityAttractorDictionary[gravityAttractor.planetId] = new KeyValuePair<GravityAttractor, float>(gravityAttractor, 0f);
+                gravityAttractorDictionary[objectState.GetGuid()] = new KeyValuePair<GravityAttractor, float>(gravityAttractor, 0f);
             }
             else
             {
                 //if it's not already in the list we  need to add a new entry
-                gravityAttractorDictionary.Add(gravityAttractor.planetId, new KeyValuePair<GravityAttractor, float>(gravityAttractor, 0f));
+                gravityAttractorDictionary.Add(objectState.GetGuid(), new KeyValuePair<GravityAttractor, float>(gravityAttractor, 0f));
             }
         }
     }
@@ -73,11 +68,13 @@ public class GravityBody : EntityBehaviour<ICharacterState>
     {
         if (!entity.IsOwner) return;
 
-        GravityAttractor gravityAttractor = other.gameObject.GetComponentInParent<GravityAttractor>();
-
         if (other.gameObject.layer.Equals(LayerMask.NameToLayer("GravityField")))
         {
-            gravityAttractorDictionary.Remove(gravityAttractor.planetId);
+            IObjectState objectState = other.gameObject.GetComponentInParent<IObjectState>();
+            if (other.gameObject.layer.Equals(LayerMask.NameToLayer("GravityField")))
+            {
+                gravityAttractorDictionary.Remove(objectState.GetGuid());
+            }
         }
     }
 

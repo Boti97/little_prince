@@ -36,7 +36,7 @@ public class PlayerNetworkState : CharacterNetworkState
             if (health < 0f)
             {
                 GameObjectManager.Instance.CinemachineVirtualCamera.gameObject.SetActive(false);
-                EventManager.Instance.SendPlayerDiedEvent(id);
+                EventManager.Instance.SendPlayerDiedEvent(GetGuid());
             }
         }
     }

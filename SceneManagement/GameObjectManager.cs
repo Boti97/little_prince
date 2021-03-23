@@ -14,6 +14,7 @@ public sealed class GameObjectManager : MonoBehaviour
     private Slider healthBar;
     private Slider thrustBar;
     private GameObject gameOverText;
+    private GameObject sun;
     private CinemachineFreeLook cinemachineVirtualCamera;
     private List<GameObject> planets;
     private List<GameObject> players;
@@ -45,6 +46,7 @@ public sealed class GameObjectManager : MonoBehaviour
     public List<GameObject> Planets { get => planets; set => planets = value; }
     public List<GameObject> Players { get => players; set => players = value; }
     public List<GameObject> Enemies { get => enemies; set => enemies = value; }
+    public GameObject Sun { get => sun; set => sun = value; }
 
     public void Awake()
     {
@@ -75,9 +77,12 @@ public sealed class GameObjectManager : MonoBehaviour
         Enemies = new List<GameObject>();
         Enemies.AddRange(GameObject.FindGameObjectsWithTag("Enemy"));
 
+        Sun = GameObject.FindGameObjectWithTag("Sun");
+
         DeactivateUnnecessaryGameObjects();
     }
 
+    //----------------------------------- PLAYER RELATED METHODS -----------------------------------
     public IEnumerator RefreshPlanetsCoroutine()
     {
         while (Planets.Count.Equals(0))
@@ -85,25 +90,6 @@ public sealed class GameObjectManager : MonoBehaviour
             yield return new WaitForSeconds(1f);
             Planets.AddRange(GameObject.FindGameObjectsWithTag("Planet"));
         }
-    }
-
-    public IEnumerator RefreshEnemiesCoroutine()
-    {
-        while (Enemies.Count.Equals(0))
-        {
-            yield return new WaitForSeconds(1f);
-            Enemies.AddRange(GameObject.FindGameObjectsWithTag("Enemy"));
-        }
-    }
-
-    public void RefreshPlanets()
-    {
-        Planets.AddRange(GameObject.FindGameObjectsWithTag("Planet"));
-    }
-
-    public void RefreshEnemies()
-    {
-        Enemies.AddRange(GameObject.FindGameObjectsWithTag("Enemy"));
     }
 
     public void RefreshPlayers()
@@ -127,12 +113,12 @@ public sealed class GameObjectManager : MonoBehaviour
 
     public GameObject GetPlayerById(Guid id)
     {
-        return Players.Find(player => player.GetComponent<PlayerNetworkState>().id == id);
+        return Players.Find(player => player.GetComponent<PlayerNetworkState>().GetGuid() == id);
     }
 
     public Guid GetOwnedPlayerId()
     {
-        return Players.Find(player => player.GetComponent<PlayerNetworkState>().entity.IsOwner).GetComponent<PlayerNetworkState>().id;
+        return Players.Find(player => player.GetComponent<PlayerNetworkState>().entity.IsOwner).GetComponent<PlayerNetworkState>().GetGuid();
     }
 
     public bool IsOwnedPlayerAlive()
@@ -140,14 +126,19 @@ public sealed class GameObjectManager : MonoBehaviour
         return Players.Find(player => player.GetComponent<PlayerNetworkState>().entity.IsOwner) != null;
     }
 
-    public bool IsGameOver()
-    {
-        return GameOverText.activeSelf;
-    }
-
     public List<GameObject> FindPlayersOnPlanet(Guid planetId)
     {
         return Players.FindAll(player => player.GetComponent<PlayerBehaviour>().planetId == planetId);
+    }
+
+    //----------------------------------- ENEMY RELATED METHODS -----------------------------------
+    public IEnumerator RefreshEnemiesCoroutine()
+    {
+        while (Enemies.Count.Equals(0))
+        {
+            yield return new WaitForSeconds(1f);
+            Enemies.AddRange(GameObject.FindGameObjectsWithTag("Enemy"));
+        }
     }
 
     public List<GameObject> FindEnemiesOnPlanet(Guid planetId)
@@ -164,6 +155,29 @@ public sealed class GameObjectManager : MonoBehaviour
         });
     }
 
+    public void RefreshEnemies()
+    {
+        Enemies.AddRange(GameObject.FindGameObjectsWithTag("Enemy"));
+    }
+
+    //----------------------------------- PLANET RELATED METHODS -----------------------------------
+    public void RefreshPlanets()
+    {
+        Planets.AddRange(GameObject.FindGameObjectsWithTag("Planet"));
+    }
+
+    public GameObject GetPlanetById(Guid id)
+    {
+        return Planets.Find(planet => planet.GetComponent<PlanetNetworkState>().PlanetId == id);
+    }
+
+    //----------------------------------- OTHER METHODS -----------------------------------
+    public bool IsGameOver()
+    {
+        return GameOverText.activeSelf;
+    }
+
+    //----------------------------------- PRIVATE METHODS -----------------------------------
     private void DeactivateUnnecessaryGameObjects()
     {
         GameOverText.SetActive(false);

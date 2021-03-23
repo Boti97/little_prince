@@ -3,9 +3,6 @@ using UnityEngine;
 
 public abstract class GravityAttractor : MonoBehaviour
 {
-    [HideInInspector]
-    public Guid planetId;
-
     [SerializeField]
     protected float gravityPower = -5000f;
 
@@ -19,14 +16,6 @@ public abstract class GravityAttractor : MonoBehaviour
     }
 
     protected float attractTurnSpeed = 0.1f;
-
-    private void Awake()
-    {
-        if (planetId != null)
-        {
-            planetId = Guid.NewGuid();
-        }
-    }
 
     //base method, this needs to be overridden for special gravity behavior
     public void Attract(GameObject body)

@@ -97,7 +97,7 @@ public class GameSceneManager : GlobalEventListener
         //TODO: change this to random planet, only for debugging purposes
         //int randomPlanetIndex = UnityEngine.Random.Range(0, GameObjectManager.Instance.Planets.Count - 1);
         int randomPlanetIndex = 0;
-        GameObjectManager.Instance.RemoveEnemiesOnPlanet(GameObjectManager.Instance.Planets[randomPlanetIndex].GetComponentInChildren<PlanetGravityAttractor>().planetId);
+        GameObjectManager.Instance.RemoveEnemiesOnPlanet(GameObjectManager.Instance.Planets[randomPlanetIndex].GetComponentInChildren<PlanetNetworkState>().PlanetId);
 
         Vector3 spawnPos = GameObjectManager.Instance.Planets[randomPlanetIndex].transform.position;
         spawnPos.x += 30;
@@ -107,7 +107,7 @@ public class GameSceneManager : GlobalEventListener
 
     private void CreateSolarSystem()
     {
-        BoltNetwork.Instantiate(sunPrefab);
+        GameObjectManager.Instance.Sun = BoltNetwork.Instantiate(sunPrefab).gameObject;
 
         foreach (var planetPosition in GetPlanetPositions())
         {

@@ -69,22 +69,21 @@ public class EnemyBehaviour : CharacterBehaviour
         //if we have a player to follow, who's on the same planet as us, follow it
         if (playerToFollow != null && IsPlayerOnSamePlanet(playerToFollow))
         {
-            Vector3 distanceFromPlayer = Vector3.ProjectOnPlane(playerToFollow.transform.position - transform.position, transform.up);
-            if (distanceFromPlayer.magnitude > 1.5f)
-            {
-                finalDir = Vector3.ProjectOnPlane((playerToFollow.transform.position - transform.position).normalized, transform.up).normalized;
-                moveDir = Vector3.forward;
-            }
             //if we close enough we push them into space
-            else
+            if (Vector3.Distance(playerToFollow.transform.position, transform.position) < 1.5f)
             {
                 EventManager.Instance.SendCharacterPushedEvent(
                         transform.Find("Model").forward,
-                        playerToFollow.GetComponent<PlayerNetworkState>().id,
+                        playerToFollow.GetComponent<PlayerNetworkState>().GetGuid(),
                         pushPower + (numberOfPushes * pushPowerAmplifier));
 
                 numberOfPushes++;
                 moveDir = Vector3.zero;
+            }
+            else
+            {
+                finalDir = Vector3.ProjectOnPlane((playerToFollow.transform.position - transform.position).normalized, transform.up).normalized;
+                moveDir = Vector3.forward;
             }
         }
         else
