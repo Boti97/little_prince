@@ -83,14 +83,6 @@ public sealed class GameObjectManager : MonoBehaviour
     }
 
     //----------------------------------- PLAYER RELATED METHODS -----------------------------------
-    public IEnumerator RefreshPlanetsCoroutine()
-    {
-        while (Planets.Count.Equals(0))
-        {
-            yield return new WaitForSeconds(1f);
-            Planets.AddRange(GameObject.FindGameObjectsWithTag("Planet"));
-        }
-    }
 
     public void RefreshPlayers()
     {
@@ -161,6 +153,15 @@ public sealed class GameObjectManager : MonoBehaviour
     }
 
     //----------------------------------- PLANET RELATED METHODS -----------------------------------
+    public IEnumerator RefreshPlanetsCoroutine()
+    {
+        while (Planets.Count.Equals(0))
+        {
+            yield return new WaitForSeconds(1f);
+            Planets.AddRange(GameObject.FindGameObjectsWithTag("Planet"));
+        }
+    }
+
     public void RefreshPlanets()
     {
         Planets.AddRange(GameObject.FindGameObjectsWithTag("Planet"));
