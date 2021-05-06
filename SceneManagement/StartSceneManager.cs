@@ -18,7 +18,10 @@ public class StartSceneManager : GlobalEventListener
     private GameObject mainMenuPanel;
 
     [SerializeField]
-    private GameObject onlineGamePanel;
+    private GameObject joinOnlineGamePanel;
+
+    [SerializeField]
+    private GameObject hostOnlineGamePanel;
 
     [SerializeField]
     private GameObject roomPrefab;
@@ -34,7 +37,8 @@ public class StartSceneManager : GlobalEventListener
         //Cursor.lockState = CursorLockMode.Confined;
         //Cursor.visible = true;
 
-        onlineGamePanel.SetActive(false);
+        joinOnlineGamePanel.SetActive(false);
+        hostOnlineGamePanel.SetActive(false);
         mainMenuPanel.SetActive(true);
         SlowerSun();
     }
@@ -45,7 +49,6 @@ public class StartSceneManager : GlobalEventListener
         GameObject.Find("HostButton").GetComponent<Button>().interactable = false;
         GameObject.FindWithTag("NewRoomNameInputField").GetComponent<TMP_InputField>().interactable = false;
 
-        BoltLauncher.Shutdown();
         FasterSun();
         BoltLauncher.StartServer();
     }
@@ -92,18 +95,32 @@ public class StartSceneManager : GlobalEventListener
         BoltLauncher.Shutdown();
     }
 
-    public void OnClickOnlineGame()
+    public void OnClickJoinOnlineGame()
     {
-        onlineGamePanel.SetActive(true);
+        joinOnlineGamePanel.SetActive(true);
         mainMenuPanel.SetActive(false);
         //exitJoiningGameButton.SetActive(false);
         BoltLauncher.StartClient();
     }
 
-    public void OnClickBack()
+    public void OnClickHostOnlineGame()
+    {
+        hostOnlineGamePanel.SetActive(true);
+        mainMenuPanel.SetActive(false);
+    }
+
+    public void OnClickBackFromJoin()
+    {
+        joinOnlineGamePanel.SetActive(false);
+        mainMenuPanel.SetActive(true);
+        BoltLauncher.Shutdown();
+        SlowerSun();
+    }
+
+    public void OnClickBackFromHost()
     {
         GameObject.FindWithTag("NewRoomNameInputField").GetComponent<TMP_InputField>().text = "";
-        onlineGamePanel.SetActive(false);
+        hostOnlineGamePanel.SetActive(false);
         mainMenuPanel.SetActive(true);
         BoltLauncher.Shutdown();
         SlowerSun();
