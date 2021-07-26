@@ -1,6 +1,5 @@
-using Bolt;
-using Bolt.Matchmaking;
-using Bolt.Photon;
+using Photon.Bolt;
+using Photon.Bolt.Matchmaking;
 using System;
 using System.Collections.Generic;
 using TMPro;

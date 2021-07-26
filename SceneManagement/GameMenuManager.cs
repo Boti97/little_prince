@@ -1,5 +1,5 @@
 using UnityEngine;
-using Bolt;
+using Photon.Bolt;
 using UnityEngine.SceneManagement;
 
 public class GameMenuManager : GlobalEventListener
