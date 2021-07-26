@@ -1,6 +1,5 @@
-using Bolt;
-using Bolt.Matchmaking;
-using Bolt.Photon;
+using Photon.Bolt;
+using Photon.Bolt.Matchmaking;
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -11,8 +10,8 @@ using UnityEngine.UI;
 
 public class StartSceneManager : GlobalEventListener
 {
-    //[SerializeField]
-    //private GameObject exitJoiningGameButton;
+    [SerializeField]
+    private GameObject backFromJoiningGameButton;
 
     [SerializeField]
     private GameObject mainMenuPanel;
@@ -40,7 +39,6 @@ public class StartSceneManager : GlobalEventListener
         joinOnlineGamePanel.SetActive(false);
         hostOnlineGamePanel.SetActive(false);
         mainMenuPanel.SetActive(true);
-        SlowerSun();
     }
 
     public void OnClickHost()
@@ -48,8 +46,6 @@ public class StartSceneManager : GlobalEventListener
         hostIsCreating = true;
         GameObject.Find("HostButton").GetComponent<Button>().interactable = false;
         GameObject.FindWithTag("NewRoomNameInputField").GetComponent<TMP_InputField>().interactable = false;
-
-        FasterSun();
         BoltLauncher.StartServer();
     }
 
@@ -90,8 +86,7 @@ public class StartSceneManager : GlobalEventListener
 
     public void OnClickExitJoiningGame()
     {
-        SlowerSun();
-        //exitJoiningGameButton.SetActive(false);
+        backFromJoiningGameButton.SetActive(false);
         BoltLauncher.Shutdown();
     }
 
@@ -99,7 +94,6 @@ public class StartSceneManager : GlobalEventListener
     {
         joinOnlineGamePanel.SetActive(true);
         mainMenuPanel.SetActive(false);
-        //exitJoiningGameButton.SetActive(false);
         BoltLauncher.StartClient();
     }
 
@@ -114,7 +108,6 @@ public class StartSceneManager : GlobalEventListener
         joinOnlineGamePanel.SetActive(false);
         mainMenuPanel.SetActive(true);
         BoltLauncher.Shutdown();
-        SlowerSun();
     }
 
     public void OnClickBackFromHost()
@@ -123,7 +116,6 @@ public class StartSceneManager : GlobalEventListener
         hostOnlineGamePanel.SetActive(false);
         mainMenuPanel.SetActive(true);
         BoltLauncher.Shutdown();
-        SlowerSun();
     }
 
     public void OnValueChangeForNewRoomNameInputFieldText()
@@ -137,16 +129,6 @@ public class StartSceneManager : GlobalEventListener
         {
             GameObject.Find("HostButton").GetComponent<Button>().interactable = false;
         }
-    }
-
-    private void FasterSun()
-    {
-        GameObject.Find("Sun").GetComponentInChildren<SunBehaviour>().SelfRotationSpeed = 10f;
-    }
-
-    private void SlowerSun()
-    {
-        GameObject.Find("Sun").GetComponentInChildren<SunBehaviour>().SelfRotationSpeed = 2f;
     }
 
     private void OnClickJoinGame(PhotonSession photonSession)

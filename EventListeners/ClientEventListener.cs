@@ -1,4 +1,4 @@
-using Bolt;
+using Photon.Bolt;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

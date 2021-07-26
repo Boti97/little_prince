@@ -1,4 +1,4 @@
-using Bolt;
+using Photon.Bolt;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -24,9 +24,6 @@ public class GameSceneManager : GlobalEventListener
     [SerializeField]
     private float solarSystemRadius;
 
-    [SerializeField]
-    private float planetToPlanetDistance;
-
     private void Awake()
     {
         //Cursor.lockState = CursorLockMode.Confined;
@@ -38,7 +35,7 @@ public class GameSceneManager : GlobalEventListener
         if (BoltNetwork.IsServer)
         {
             CreateSolarSystem();
-            SpawnEnemiesAndObjectives();
+            //SpawnEnemiesAndObjectives();
         }
 
         StartCoroutine(SpawnPlayer());
@@ -92,12 +89,12 @@ public class GameSceneManager : GlobalEventListener
     private IEnumerator SpawnPlayer()
     {
         yield return StartCoroutine(GameObjectManager.Instance.RefreshPlanetsCoroutine());
-        yield return StartCoroutine(GameObjectManager.Instance.RefreshEnemiesCoroutine());
+        //yield return StartCoroutine(GameObjectManager.Instance.RefreshEnemiesCoroutine());
 
         //TODO: change this to random planet, only for debugging purposes
         //int randomPlanetIndex = UnityEngine.Random.Range(0, GameObjectManager.Instance.Planets.Count - 1);
         int randomPlanetIndex = 0;
-        GameObjectManager.Instance.RemoveEnemiesOnPlanet(GameObjectManager.Instance.Planets[randomPlanetIndex].GetComponentInChildren<PlanetNetworkState>().PlanetId);
+        //GameObjectManager.Instance.RemoveEnemiesOnPlanet(GameObjectManager.Instance.Planets[randomPlanetIndex].GetComponentInChildren<PlanetNetworkState>().PlanetId);
 
         Vector3 spawnPos = GameObjectManager.Instance.Planets[randomPlanetIndex].transform.position;
         spawnPos.x += 30;
