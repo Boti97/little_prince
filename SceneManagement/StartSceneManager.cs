@@ -39,7 +39,7 @@ public class StartSceneManager : GlobalEventListener
         joinOnlineGamePanel.SetActive(false);
         hostOnlineGamePanel.SetActive(false);
         mainMenuPanel.SetActive(true);
-        SlowerSun();
+        //SlowerSun();
     }
 
     public void OnClickHost()
@@ -48,7 +48,7 @@ public class StartSceneManager : GlobalEventListener
         GameObject.Find("HostButton").GetComponent<Button>().interactable = false;
         GameObject.FindWithTag("NewRoomNameInputField").GetComponent<TMP_InputField>().interactable = false;
 
-        FasterSun();
+        //FasterSun();
         BoltLauncher.StartServer();
     }
 
@@ -113,7 +113,7 @@ public class StartSceneManager : GlobalEventListener
         joinOnlineGamePanel.SetActive(false);
         mainMenuPanel.SetActive(true);
         BoltLauncher.Shutdown();
-        SlowerSun();
+        //SlowerSun();
     }
 
     public void OnClickBackFromHost()
@@ -122,7 +122,7 @@ public class StartSceneManager : GlobalEventListener
         hostOnlineGamePanel.SetActive(false);
         mainMenuPanel.SetActive(true);
         BoltLauncher.Shutdown();
-        SlowerSun();
+        //SlowerSun();
     }
 
     public void OnValueChangeForNewRoomNameInputFieldText()
