@@ -24,7 +24,7 @@ public abstract class GravityAttractor : MonoBehaviour
 
         body.transform.rotation = Quaternion.Slerp(body.transform.rotation, targetRotation, attractTurnSpeed);
 
-        body.GetComponent<Rigidbody>().AddForce(targetDir * gravityPower / GetGravityPowerIndicator(body));
+        body.GetComponent<Rigidbody>().AddForce(targetDir * gravityPower * GetGravityPowerIndicator(body));
     }
 
     //if only the power of the gravity needs to be modified, only this method needs to be overridden

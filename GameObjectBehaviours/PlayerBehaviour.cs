@@ -25,12 +25,20 @@ public class PlayerBehaviour : CharacterBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space) && (isGrounded || isJumpEnabled))
         {
+            Vector3 facingDir = new Vector3();
+            //transform.parent = null;
+            if (moveDir.Equals(Vector3.zero))
+            {
+                facingDir = transform.GetChild(0).transform.forward.normalized;
+            }
+            else
+            {
+                facingDir = finalDir;
+            }
+            GetComponent<Rigidbody>().AddForce(Vector3.RotateTowards(facingDir, transform.up, 30 * Mathf.Deg2Rad, 0) * jumpForce);
+
             SetAnimation("isJumped", 1);
             SetAnimation("isGrounded", 0);
-
-            //transform.parent = null;
-
-            GetComponent<Rigidbody>().AddForce(transform.up * jumpForce);
             numberOfJumps++;
             isGrounded = false;
             isJumping = true;

@@ -7,10 +7,10 @@ using TMPro;
 using Random = UnityEngine.Random;
 using static ShapeSettings;
 
-public class PlanetGenerator : MonoBehaviour
+public class PlanetSurfaceGenerator : MonoBehaviour
 {
-    public int numberOfRows;
-    public int baseSeed;
+    public int planetMinRange;
+    public int planetMaxRange;
     public Shader planetShader;
     public List<Color> colorPalette;
     public List<int> planetSeeds = new List<int>();
@@ -33,9 +33,9 @@ public class PlanetGenerator : MonoBehaviour
     private Vector3[] directions = { Vector3.up, Vector3.down, Vector3.left, Vector3.right, Vector3.forward, Vector3.back };
     private String[] directionStrings = { "Up", "Down", "Left", "Right", "Forward", "Back" };
 
-    private List<GameObject> GeneratePlanets(int numberOfPlanets, int baseSeed, List<Color> colorPalette)
+    public List<GameObject> GeneratePlanets(int numberOfPlanets, int baseSeed)
     {
-        this.colorPalette = colorPalette;
+        this.colorPalette = new ColorPaletteGenerator().GenerateColorPalette(colorPalette.Count);
         //set base seed
         Random.InitState(baseSeed);
         for (int i = 0; i < numberOfPlanets; i++)
@@ -56,11 +56,10 @@ public class PlanetGenerator : MonoBehaviour
 
     private void GenerateInput()
     {
-        Debug.Log(Random.seed);
         currentGradient = SetColorGradient();
 
         shapeSettings = new ShapeSettings();
-        shapeSettings.radius = Random.Range(5, 10);
+        shapeSettings.radius = Random.Range(planetMinRange, planetMaxRange);
         shapeSettings.noiseLayers = new NoiseLayer[3];
 
         for (int i = 0; i < shapeSettings.noiseLayers.Length; i++)
@@ -134,7 +133,7 @@ public class PlanetGenerator : MonoBehaviour
         for (int i = 0; i < colorKey.Length; i++)
         {
             //get a random, NOT USED color from color palette
-            int numberOfColorInPalette = Random.Range(0, colorPalette.Count);
+            int numberOfColorInPalette = Random.Range(0, colorPalette.Count - 1);
             colorKey[i].color = colorPalette[numberOfColorInPalette];
         }
 
@@ -170,7 +169,7 @@ public class PlanetGenerator : MonoBehaviour
     // ----------------------------- PLANET GENERATION METHODS ---------------------------------------------
     public GameObject GeneratePlanet(int number)
     {
-        GameObject planet = new GameObject("Planet" + number);
+        GameObject planet = new GameObject("Planet" + number + "Surface");
         Material planetMaterial = new Material(planetShader);
 
         Initialize(planet, number, planetMaterial);

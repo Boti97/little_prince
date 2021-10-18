@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static BaseFunctionValueGenerator;
+using Random = UnityEngine.Random;
 
 public class PlanetPositionGenerator : MonoBehaviour
 {
@@ -38,21 +39,19 @@ public class PlanetPositionGenerator : MonoBehaviour
 
     private void GenerateInput()
     {
-        int inputBaseSeed = UnityEngine.Random.Range(0, 10000);
-        Debug.Log("Input Base Seed: " + inputBaseSeed);
+        //seed was set in GameSceneManager
+        Debug.Log("Input Base Seed: " + Random.seed);
 
-        UnityEngine.Random.InitState(inputBaseSeed);
-
-        noiseSeed = UnityEngine.Random.Range(0f, 5f);
+        noiseSeed = Random.Range(0f, 5f);
         Debug.Log("Noise Seed: " + noiseSeed);
 
-        baseCircleRadius = UnityEngine.Random.Range(500, 1000);
+        baseCircleRadius = Random.Range(500, 1000);
         Debug.Log("Base Circle Radius: " + (baseCircleRadius / 1000f));
 
-        noiseAmplitude = UnityEngine.Random.Range(0.2f, 0.6f) / (baseCircleRadius / 500f);
+        noiseAmplitude = Random.Range(0.2f, 0.6f) / (baseCircleRadius / 500f);
         Debug.Log("Noise Amplitude: " + noiseAmplitude);
 
-        noiseRoughness = UnityEngine.Random.Range(0.01f, 0.1f) / (baseCircleRadius / 500f);
+        noiseRoughness = Random.Range(0.01f, 0.1f) / (baseCircleRadius / 500f);
         Debug.Log("Noise Roughness: " + noiseRoughness);
 
         lineRendererDivisionNum = 1000;

@@ -2,7 +2,9 @@ using Photon.Bolt;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class GameSceneManager : GlobalEventListener
 {
@@ -10,10 +12,10 @@ public class GameSceneManager : GlobalEventListener
     private GameObject playerPrefab;
 
     [SerializeField]
-    private GameObject leadSoldierPrefab;
+    private GameObject planetObjectPrefab;
 
     [SerializeField]
-    private GameObject planetPrefab;
+    private GameObject leadSoldierPrefab;
 
     [SerializeField]
     private GameObject sunPrefab;
@@ -23,6 +25,9 @@ public class GameSceneManager : GlobalEventListener
 
     [SerializeField]
     private float solarSystemRadius;
+
+    [SerializeField]
+    private int baseSeed;
 
     private void Awake()
     {
@@ -104,18 +109,80 @@ public class GameSceneManager : GlobalEventListener
 
     private void CreateSolarSystem()
     {
-        GameObjectManager.Instance.Sun = BoltNetwork.Instantiate(sunPrefab).gameObject;
+        //GameObjectManager.Instance.Sun = BoltNetwork.Instantiate(sunPrefab).gameObject;
 
-        foreach (var planetPosition in GetPlanetPositions())
-        {
-            BoltNetwork.Instantiate(planetPrefab, planetPosition, UnityEngine.Random.rotation);
-        }
+        //set random generation seed for recoverability
+        baseSeed = Random.Range(0, 10000);
+        Random.InitState(baseSeed);
+
+        List<Vector3> planetPositions = GetPlanetPositions();
+        List<GameObject> planetSurfaces = GetPlanetSurfaces(planetPositions.Count);
+        List<GameObject> planetObjects = InitiatePlanetObjects(planetPositions);
+
+        SetUpPlanetSurfaceComponents(planetSurfaces, planetObjects);
+
+        //TODO: more complex planet placement
+        //for (int i = 0; i < planetPositions.Count; i++)
+        //{
+        //    GameObject planetX = BoltNetwork.Instantiate(planetSurfaces[i], planetPositions[i], Random.rotation).gameObject;
+        //}
 
         GameObjectManager.Instance.RefreshPlanets();
+    }
+
+    private List<GameObject> InitiatePlanetObjects(List<Vector3> planetPositions)
+    {
+        List<GameObject> planetObjects = new List<GameObject>();
+        for (int i = 0; i < planetPositions.Count; i++)
+        {
+            GameObject planetObject = BoltNetwork.Instantiate(planetObjectPrefab, planetPositions[i], Random.rotation).gameObject;
+            planetObject.name = "Planet" + i;
+            planetObjects.Add(planetObject);
+        }
+        return planetObjects;
+    }
+
+    private void SetUpPlanetSurfaceComponents(List<GameObject> planetSurfaces, List<GameObject> planetObjects)
+    {
+        for (int i = 0; i < planetSurfaces.Count; i++)
+        {
+            //assaign unique bolt entity to planet
+            planetSurfaces[i].transform.parent = planetObjects[i].transform;
+            planetSurfaces[i].transform.localPosition = Vector3.zero;
+
+            //set up planet core
+            //planetCore.GetComponent<SphereCollider>().radius = 10;
+            //planetCore.transform.parent = planetSurfaces[i].transform;
+
+            //set up bolt entity 
+            //BoltEntity source = boltEntityPrefab.GetComponent<BoltEntity>();
+            //BoltEntity target = planets[i].AddComponent<BoltEntity>();
+            //CopyClassValues(source, target);
+
+            //set up network state
+            planetSurfaces[i].AddComponent<PlanetNetworkState>();
+
+            //set up planet behaviour
+            //planets[i].AddComponent<PlanetBehaviour>();
+
+            //tag planet
+            planetSurfaces[i].tag = "Planet";
+
+            //set Ground layer
+            planetSurfaces[i].layer = 8;
+
+            //add Mesh collider
+            planetSurfaces[i].AddComponent<MeshCollider>();
+        }
     }
 
     private List<Vector3> GetPlanetPositions()
     {
         return gameObject.GetComponent<PlanetPositionGenerator>().GeneratePlanetPositions();
+    }
+
+    private List<GameObject> GetPlanetSurfaces(int numberOfPlanets)
+    {
+        return gameObject.GetComponent<PlanetSurfaceGenerator>().GeneratePlanets(numberOfPlanets, baseSeed);
     }
 }

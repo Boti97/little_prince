@@ -45,6 +45,7 @@ public class StartSceneManager : GlobalEventListener
     {
         hostIsCreating = true;
         GameObject.Find("HostButton").GetComponent<Button>().interactable = false;
+        GameObject.Find("BackButton").GetComponent<Button>().interactable = false;
         GameObject.FindWithTag("NewRoomNameInputField").GetComponent<TMP_InputField>().interactable = false;
         BoltLauncher.StartServer();
     }
@@ -115,7 +116,6 @@ public class StartSceneManager : GlobalEventListener
         GameObject.FindWithTag("NewRoomNameInputField").GetComponent<TMP_InputField>().text = "";
         hostOnlineGamePanel.SetActive(false);
         mainMenuPanel.SetActive(true);
-        BoltLauncher.Shutdown();
     }
 
     public void OnValueChangeForNewRoomNameInputFieldText()

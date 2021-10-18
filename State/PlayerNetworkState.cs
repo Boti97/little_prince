@@ -30,7 +30,8 @@ public class PlayerNetworkState : CharacterNetworkState
     {
         if (gravityBody.AttractorCount() == 0)
         {
-            health -= 0.002f;
+            //TODO: commented for debug purposes, add back later
+            //health -= 0.002f;
             GameObjectManager.Instance.HealthBar.value = health;
 
             if (health < 0f)

@@ -20,7 +20,7 @@ public class PlanetBehaviour : EntityBehaviour<IPlanetState>
         if (!entity.IsOwner) return;
         selfRotationSpeed = Random.Range(0.0f, selfRotationSpeed);
         selfRotationAxis = VectorExtensions.RandomAxis();
-        orbitCenter = GameObjectManager.Instance.Sun.transform;
+        //orbitCenter = GameObjectManager.Instance.Sun.transform;
     }
 
     private void Update()
